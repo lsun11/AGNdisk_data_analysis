@@ -131,9 +131,9 @@ for idx, quant in enumerate(quant_list):
     t_filenames_pre = checkpoint_path + "Tave_vs_theta_time_"+str(radius_select)+"__" 
 
     if idx != len(quant_list)-1 :
-        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))
+        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))
     else:
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time)
+        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, verbose)
         if verbose == "False":
             Print_subtitle("Data structure after loading saved files:")
             Print_text("Time array:", np.shape(t)[0])

@@ -263,9 +263,10 @@ def Get_Photosphere2(theta_data, kappa_data, rho_data, radius, hemi):
 # end:   Assigned ending iteration to compare with saved files:
 # output_all: Output everything? True (t, quant_data, file_exist, save_start, start) | False (quant_data only)
 # read_time: Read in time file? Set it False if you only want to regenerate some quantity files
+# verbose: If we print verbose ('True') info or detailed ('False') info.
 ################################################################################################################################
 
-def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_all, read_time):
+def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_all, read_time, verbose):
     Print_text( "Function Check_Load_Files: assgined start iter:", start, " end iter:", end)
     save_file_list = glob.glob(filenames)
 
@@ -283,7 +284,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
                 save_end = int(file.split('_')[-2])                                                                           
                 save_list.append([save_start, save_end])
 
-        Print_text( "Available files have start/end iterations:", save_list)
+        if verbose == "False": Print_text( "Available files have start/end iterations:", save_list)
 
 
         max_idx = 0
@@ -297,7 +298,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             else:
                 Print_text("File", save_file_list[i], "not overlaps with assigned period [",start, end,"]") 
 
-        Print_text("Found best file, ", max_idx, save_list[max_idx], save_file_list[max_idx])
+        if verbose == "False": Print_text("Found best file, ", max_idx, save_list[max_idx], save_file_list[max_idx])
 
 
 
@@ -305,7 +306,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
         save_start = save_list[max_idx][0]
         save_end = save_list[max_idx][1]     
  
-        Print_text( "Function Check_Load_Files: saved start iter:", save_start, "saved end iter:", save_end)
+        if verbose == "False": Print_text( "Function Check_Load_Files: saved start iter:", save_start, "saved end iter:", save_end)
        
         if file_exist == 1:
             if end <= save_end:                                                                                      
@@ -335,10 +336,10 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             save_start = start            
 
     if output_all:
-        Print_subsubtitle("Output all is True!!!") 
+        if verbose == "False": Print_subsubtitle("Output all is True!!!") 
         return t, quant_data, file_exist, save_start, start
     else:
-        Print_subsubtitle("Output all is False!")
+        if verbose == "False": Print_subsubtitle("Output all is False!")
         return quant_data
 
 

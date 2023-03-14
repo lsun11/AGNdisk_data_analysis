@@ -99,9 +99,9 @@ for idx, quant in enumerate(quant_list):
     t_filenames_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time_"
         
     if idx != len(quant_list)-1 :                                                                                        
-        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))   
+        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))   
     else:                                                                                                                
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time)
+        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, verbose)
         if verbose == "False":                                                                                           
             Print_subtitle("Data structure after loading saved files:")                                                  
             Print_text("Time array:", np.shape(t)[0])                                                                    
@@ -114,7 +114,7 @@ save_step = 10
 save_quant_file_pre = checkpoint_path + "T_ave_"+str(quant)+"_vs_r"
 save_time_file_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time" 
 
-pbar = tqdm(total=end-start)
+pbar = tqdm(total=end-start+1)
 for iter in range(start, end):                                                                                   
     filename = "hist_"+str(iter).zfill(5)+".npz"                                                                 
     if verbose == "False":

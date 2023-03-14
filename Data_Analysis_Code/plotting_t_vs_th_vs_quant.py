@@ -26,6 +26,7 @@ from sys import argv
 myfonts = "Times New Roman"                                                                                                                                                                                                            
 plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                                             
 plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                                              
+from tqdm import tqdm
                                                                                                                                                                                                                                        
 from parameters import *                                                                                            
 from util import *
@@ -119,20 +120,20 @@ if plot_phot == "Y":
     if quant1 != "None":
         if verbose == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files") 
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"    
-        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))
+        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))
         idx += 1
     if quant2 != "None":
         if verbose == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-        quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))               
+        quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose)) 
         idx += 1
     if verbose == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-    iphot_upper_total = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))               
+    iphot_upper_total = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))
     idx += 1 
     if verbose == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-    t, iphot_lower_total, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time))            
+    t, iphot_lower_total, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, verbose)) 
 
     if verbose == "False": 
         Print_subtitle("Data structure after loading saved files:")                                               
@@ -175,12 +176,16 @@ Print_title(sp20*5)
 ########################################################################################################          
 # Computing the new time and quantities arrays:                                                                         
 ########################################################################################################
-Print_subtitle("Start Reading New Data to Arrays!!!") 
+Print_subtitle("Start Reading New Data to Arrays!!! Total files to read: ", end-start+1) 
+pbar = tqdm(total=end-start+1)
 for iter in range(start, end):
     filename = "hist_"+str(iter).zfill(5)+".npz"
     if os.path.exists(dir+'/'+filename):
         data = np.load(dir+'/'+filename)
-        Print_subtitle("Reading file:", filename) 
+        if verbose == "False":  
+            Print_subtitle("Reading file:", filename) 
+        else:
+            pbar.update(n=1)
         if file_exist == 1:                                                                                                         
             t = np.append(t, Get_Time(data, dir))                                                                                   
         else:                                                                                                                       
@@ -203,7 +208,7 @@ for iter in range(start, end):
             if verbose == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":", np.shape(quant2_data))
 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!
-                Print_text("Finding the photosphere!")
+                if verbose == "False": Print_text("Finding the photosphere!")
                 #iphot_upper = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'upper')
                 #iphot_lower = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'lower') 
                 iphot_upper = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), 'upper')

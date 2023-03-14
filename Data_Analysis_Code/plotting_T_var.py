@@ -1,6 +1,6 @@
 #THIS SCRIPT PLOTS THE TEMPERATURE VARIATIONS VS TIME AND RADIUS
 #Location can be chosen at: midplane, theta = 80deg, theta = 70deg, and photosphere
-#Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa
+#Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa False
 
 print("========================== Starting plotting_T_var.py =============================")
 import numpy as np                                                                                                                                                                                                                
@@ -30,6 +30,7 @@ end = int(argv[4])
 deg = argv[5]    #midplane/80/70/photosphere
 quant2 = argv[6] #rho for computing photosphere
 quant3 = argv[7] #kappa for computing photosphere
+verbose = argv[8]
 ########################################################################################################  
 
 
@@ -109,7 +110,7 @@ if deg == "photosphere":
     filenames = checkpoint_path + "T_var_Er*"
     t_filenames_pre = checkpoint_path + "T_var_time_"
     
-    t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True)
+    t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True, verbose)
 ######################################################################################################## 
 #quant_data = quant_data[:-2]
 print(np.shape(t), np.shape(quant_data), file_exist)
