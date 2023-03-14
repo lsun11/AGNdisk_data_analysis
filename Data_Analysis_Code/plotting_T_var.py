@@ -1,6 +1,6 @@
 #THIS SCRIPT PLOTS THE TEMPERATURE VARIATIONS VS TIME AND RADIUS
 #Location can be chosen at: midplane, theta = 80deg, theta = 70deg, and photosphere
-#Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa False
+#Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa -1 False
 
 print("========================== Starting plotting_T_var.py =============================")
 import numpy as np                                                                                                                                                                                                                
@@ -30,7 +30,8 @@ end = int(argv[4])
 deg = argv[5]    #midplane/80/70/photosphere
 quant2 = argv[6] #rho for computing photosphere
 quant3 = argv[7] #kappa for computing photosphere
-verbose = argv[8]
+ph_mode = int(argv[8])
+verbose = argv[9]
 ########################################################################################################  
 
 
@@ -152,8 +153,10 @@ for iter in range(start, end):
             hemi = 'upper'
 
             for it_r in range(len(r_data)):
-                iphot.append(Get_Photosphere(th_data, kappa_data[it_r], r_data[it_r], hemi))
-
+                if ph_mode < 0:
+                    iphot.append(Get_Photosphere(th_data, kappa_data[it_r], r_data[it_r], hemi))
+                else:
+                    iphot.append(Get_Photosphere2(th_data, kappa_data[it_r], r_data[it_r], mode, hemi)) 
             
             # This line below is SUPER SLOW! 
             if file_exist == 0:

@@ -15,6 +15,7 @@ Mdot_to_cgs = dens_to_cgs * r_to_cgs**2 * v_to_cgs
 # 5.0655e5*(1.4842e13*5e-10)/(1e-8*2*7.42e13), where 5.0655e5 is AGNIron's kappa_to_cgs
 kappaes_code = 2523.14    # electron scattering opacity in code units (~0.34 cm^2/g * kappa_to_cgs )
 Er_to_Pr = 109.194/3
+rad_const = 7.5646e-15        # erg cm-3 K-4
 
 M_BH = 1.0e8
 Mdot_Edd_cgs = 1.4e18*M_BH                         # in g/s

@@ -4,19 +4,27 @@
 #Arguments:                                                                                                                                                                                                         
 # 1. case (Wedge8, Wedge9B, Wedge10)  2. quantity1  3. quantity2
 # 4. select radius  5. plot photosphere  6. start iteration  7. end iteration           
-# 8. read/loading time files? 9. Verbose output? 
+# 8. photosphere mode (-1: pure Rossland/Planck, 1: using sqrt( (kappa-kappaes)*kappaes), 2: using sqrt(kappa*kappaes))
+# 9. read/loading time files? 9. Verbose output? 
 
-# Example command1: make plots of density vs tims vs theta at radius= 120 rg with photosphere
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p 120 Y 3000 3500 True False
+
+# Example command1: make plots of density vs tims vs theta at radius= 120 rg with photosphere using sqrt(kappa*kappaes) for photosphere
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p 120 Y 3000 3500 2 True False
 
 # Example command2: Make a series of plots in command1 at r = 120, 140, 160, 180 and 200 rg:
-# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p $i Y 2000 3500 True False; done 
+# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p $i Y 2000 3500 -1 True False; done 
 
 # Example command3: Output ONLY quantity(e.g. rho) checkpoint files: 
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho None 140 N 2000 3500 False False
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho None 140 N 2000 3500 -1 False False
 
 # Example command4: Output ONLY Time checkpoint files: 
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 None None 180 N 2000 3500 True False
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 None None 180 N 2000 3500 -1 True False
+
+# Example command5: make plots of temperature vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 Temp sigma 120 Y 2000 3658 -1 True False 
+
+
+
 
 import numpy as np
 import os
@@ -52,8 +60,9 @@ radius_select = argv[4]
 plot_phot = argv[5]     # "Y" or "N"
 start = int(argv[6])
 end   = int(argv[7])
-read_time = argv[8]
-verbose   = argv[9]
+ph_mode = int(argv[8])
+read_time = argv[9]
+verbose   = argv[10]
 
 ########################################################################################################            
 #  set paths based on cases                                                                                         
@@ -93,6 +102,15 @@ th = Get_All_1D('theta', data, -1, dir, verbose)
 # Check and Load files                                                                                                          
 ########################################################################################################    
 quant_list = []
+comp_T = 0
+
+if quant1 == "Temp":
+    comp_T = 1
+    quant1 = "Er"
+elif quant2 == "Temp":                                                                                                     
+    comp_T = 1
+    quant2 = "Er"
+
 
 if quant1 != "None":
    quant_list.append(quant1)
@@ -209,10 +227,12 @@ for iter in range(start, end):
 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!
                 if verbose == "False": Print_text("Finding the photosphere!")
-                #iphot_upper = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'upper')
-                #iphot_lower = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'lower') 
-                iphot_upper = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), 'upper')
-                iphot_lower = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), 'lower')
+                if ph_mode < 0:
+                    iphot_upper = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'upper')
+                    iphot_lower = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'lower') 
+                else:
+                    iphot_upper = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), ph_mode, 'upper')
+                    iphot_lower = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), ph_mode, 'lower')
                 if file_exist == 0:
                     iphot_upper_total.append(iphot_upper)
                     iphot_lower_total.append(iphot_lower)
@@ -235,8 +255,12 @@ for iter in range(start, end):
             if verbose == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":",np.shape(quant2_data)) 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!                                                                                            
                 Print_text("Finding the photosphere!")  
-                iphot_upper = Get_Photosphere(th, data[quant2], float(radius_select), 'upper')
-                iphot_lower = Get_Photosphere(th, data[quant2], float(radius_select), 'lower')
+                if ph_mode < 0: 
+                    iphot_upper = Get_Photosphere(th, data[quant2], float(radius_select), 'upper')
+                    iphot_lower = Get_Photosphere(th, data[quant2], float(radius_select), 'lower')
+                else:
+                    iphot_upper = Get_Photosphere(th, data[quant2], float(radius_select), ph_mode, 'upper')                                                                                          
+                    iphot_lower = Get_Photosphere(th, data[quant2], float(radius_select), ph_mode, 'lower')
                 iphot_upper_total.append(iphot_upper)                                                                                                                     
                 iphot_lower_total.append(iphot_lower) 
             if verbose == "False": Print_text("Data structure of quantities:","iphot_upper_total:",np.shape(iphot_upper_total), "iphot_lower_total:",np.shape(iphot_lower_total))
@@ -268,6 +292,18 @@ for iter in range(start, end):
 if verbose == "False": Print_subtitle("Done reading data!")                                                                                
 if verbose == "False": Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data))
 
+
+
+########################################################################################################
+# Convert Er to Temperature using Er = aT^4  
+########################################################################################################
+if comp_T == 1:
+    if verbose == "False": Print_subtitle("Computing Temperature!!!")
+    if quant1 == 'Er':
+        quant1_data = [[qq**(0.25) for qq in q] for q in quant1_data]
+    elif quant2 == 'Er':                                                                                                   
+        quant2_data = [[qq**(0.25) for qq in q] for q in quant2_data] 
+    quant1 = "Temp"
 
 Print_title(sp30, "Start Plotting!!!!", sp30)                                                                     
 ########################################################################################################          
@@ -321,6 +357,12 @@ elif str(str(quant1)[0:5]) == "kappa": # no _2
     cbar_str = r'$\kappa$'                                                                                        
     fac = 8.05e3/5/3                                                                                             
     logscale = False
+elif str(str(quant1)[0:4]) == "Temp": # no _2          
+    color = 'Spectral'                                                                                                    
+    pre_str = 'T (K)'                                                                                                  
+    cbar_str = r'$\log_{10}(T) (K)$'                                                                                               
+    fac = (P_to_cgs/rad_const)**0.25
+    logscale = True
 
 
 Theta, Time = np.meshgrid(th,t)

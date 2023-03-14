@@ -1,5 +1,5 @@
 #THIS SCRIPT PLOTS R*SIN(THETA)(X), R*COS(THETA)(Y), VS QUANTITY, AT A GIVEN TIME
-# Example command python plotting_costh_vs_sinth_vs_quant.py Wedge8_2 rho sigma_p 2000 Y False
+# Example command python plotting_costh_vs_sinth_vs_quant.py Wedge8_2 rho sigma_p 2000 Y -1 False
 
 
 import numpy as np
@@ -28,7 +28,8 @@ quant1 = argv[2]       # quantity to plot
 quant2 = argv[3]       # aux quantitym can be None
 iter = argv[4]   # select iteration(time) to make the plot
 plot_phot = argv[5]     # "Y" or "N"
-verbose   = argv[6]
+ph_mode   = int(argv[6])
+verbose   = argv[7]
 #start = int(argv[6])
 #end   = int(argv[7])
 ######################################################################################################## 
@@ -100,14 +101,16 @@ if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in
         quant1_ph_data = [ q[radius_idx] for q in data[quant1]]
         quant2_ph_data = [ q[radius_idx] for q in data[quant2]]
    
-        #iphot_upper = Get_Photosphere(th, quant2_ph_data, float(radius_select), 'upper')                                                                                                                          
-        #iphot_lower = Get_Photosphere(th, quant2_ph_data, float(radius_select), 'lower')
+        if ph_mode < 0:
+            iphot_upper = Get_Photosphere(th, quant2_ph_data, float(radius_select), 'upper')                                                                                                                          
+            iphot_lower = Get_Photosphere(th, quant2_ph_data, float(radius_select), 'lower')
+        else:
+            iphot_upper = Get_Photosphere2(th, quant2_ph_data, quant1_ph_data, float(radius_select), mode, 'upper')
+            iphot_lower = Get_Photosphere2(th, quant2_ph_data, quant1_ph_data, float(radius_select), mode, 'lower')
 
-        iphot_upper = Get_Photosphere2(th, quant2_ph_data, quant1_ph_data, float(radius_select), 'upper')
-        iphot_lower = Get_Photosphere2(th, quant2_ph_data, quant1_ph_data, float(radius_select), 'lower')
         iphot_upper_total.append(iphot_upper)
         iphot_lower_total.append(iphot_lower)
-        #print(iphot_upper_total)
+
 
 Print_subtitle("Done reading data!")
 Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data))

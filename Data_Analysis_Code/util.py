@@ -199,9 +199,11 @@ def Get_Photosphere(theta_data, kappa_data, radius, hemi):
 ######################################################################################################## 
 # theta_data: The thetea array, should be from 0 to pi                                                                                                  
 # kappa_data: The density*opacity array (same size as theta)                                                                                            
-# rho_data:  The density arrary (same size as theta)
-# radius:  The radius                                                                                                                                   
-# hemi:    Which hemisphere we are integrating (upper or lower)   
+# rho_data:   The density arrary (same size as theta)
+# radius:     The radius                                                                                                                                   
+# mode:       1: using sqrt( (kappa-kappaes)*kappaes) 2. using sqrt(kappa*kappaes) Here kappa can be 
+#             either Rossland or Planck mean.
+# hemi:       Which hemisphere we are integrating (upper or lower)   
 ######################################################################################################## 
 #------------------------------------------------------------------------------------------------------#
 # Aux Function: Eff_Kappa -- Calculate the effective kappa using sqrt( (kappa-kappaes)*kappaes)
@@ -222,7 +224,7 @@ def Eff_Kappa2(kappaes, kappa_data, rho_data):
 #------------------------------------------------------------------------------------------------------#
 
 
-def Get_Photosphere2(theta_data, kappa_data, rho_data, radius, hemi):
+def Get_Photosphere2(theta_data, kappa_data, rho_data, radius, mode, hemi):
     data_len = len(theta_data) 
 
     if hemi == 'lower':                                                                                                                                 
@@ -233,8 +235,12 @@ def Get_Photosphere2(theta_data, kappa_data, rho_data, radius, hemi):
     iphot = 0
     tau = np.zeros(data_len//2)
     for it in range(1, data_len//2, 1):
-        tau[it] = tau[it-1] + 0.5*radius*(Eff_Kappa2(kappaes_code, kappa_data[it-1], rho_data[it-1])
-        + Eff_Kappa2(kappaes_code, kappa_data[it], rho_data[it]) )*(theta_data[it] - theta_data[it-1]) 
+        if mode == 1:
+            tau[it] = tau[it-1] + 0.5*radius*(Eff_Kappa(kappaes_code, kappa_data[it-1], rho_data[it-1])
+            + Eff_Kappa(kappaes_code, kappa_data[it], rho_data[it]) )*(theta_data[it] - theta_data[it-1]) 
+        elif mode == 2:
+            tau[it] = tau[it-1] + 0.5*radius*(Eff_Kappa2(kappaes_code, kappa_data[it-1], rho_data[it-1])                        
+            + Eff_Kappa2(kappaes_code, kappa_data[it], rho_data[it]) )*(theta_data[it] - theta_data[it-1])
         if np.abs(tau[it]) >= 1:    # found photosphere, no need to go further 
             #print("Hit!!!", tau[it], tau[it-1], kappa_data[it-1]/rho_data[it-1], kappa_data[it]/rho_data[it])
             iphot = it if (tau[it]+tau[it-1]) < 2 else it-1
