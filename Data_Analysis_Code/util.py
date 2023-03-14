@@ -49,6 +49,14 @@ def Print_subtitle(*arg):
     #print("\n") 
 
 
+def Print_subtitle_e(*arg):                                                                                                
+    #print("\n")                                                                                                          
+    #boarder = sp2 + "=" * len(str(arg[:]))                                                                               
+    #print(boarder)                                                                                                       
+    print_e(sp3 + "o", *arg)                                                                                               
+    #print(boarder)                                                                                                       
+    #print("\n") 
+
 ########################################################################################################                                                                                                            
 # Fucntion: Print_subsubtitle  -- print noticing texts (subsubtitle)                                                                                                                                                      
 ########################################################################################################                                                                                                            

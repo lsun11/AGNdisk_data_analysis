@@ -4,9 +4,9 @@
 # Arguments:
 # 1. case (Wedge8, Wedge9B, Wedge10)  2. start iteration  3. end iteration 
 # 4-7. list of reading/loading quantities  8. compute Mdot?
-# 9. Verbose output?
+# 9. read/load time files? (set to False if we want to generate quantity files only)  10. Verbose output?
 ############################################################################################################################################ 
-#Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8_2 2000 3568 rhovr None None None True False
+#Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8_2 2000 3568 rhovr None None None True True False
 
 import numpy as np                                                                                                 
 import os                                                                                                          
@@ -17,6 +17,7 @@ from sys import argv
 myfonts = "Times New Roman"                                                                                        
 plt.rcParams['font.family'] = "sans-serif"                                                                         
 plt.rcParams['font.sans-serif'] = myfonts                                                                          
+from tqdm import tqdm
                                                                                                                    
 from parameters import *                                                                                           
 from util import *                     
@@ -33,7 +34,8 @@ start = int(argv[2])
 end = int(argv[3])                                                                                              
 quant_list = [argv[4], argv[5], argv[6], argv[7]] # the last 3 are optional 
 comp_Mdot = argv[8]
-verbose = argv[9]
+read_time = argv[9]
+verbose = argv[10]
 
 ########################################################################################################         
 #  set paths based on cases                                                                                      
@@ -75,31 +77,50 @@ dth.append(dth[-1])
 ########################################################################################################                         
 # Getting the time array and quantity arrary:
 ########################################################################################################
+quant_list = list(filter(lambda a: a != "None", quant_list))
 radius = {'1': 120, '2':140, '3':160, '4':180}  
-t = []                                                                                                      
-quant_data = [] 
-for _ in range(len(quant_list)):                            
-    quant_data.append([])
+
+for idx, item in enumerate(quant_list):
+    if comp_Mdot == 'True':
+        quant_list[idx:idx] = ['Mdot']
+        quant_list.remove('rhovr')
+
+if verbose == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
+
+t = []                                                                                                                   
+quant_data = []                                                                                                          
+for item in quant_list:                                                                                                  
+    quant_data.append([]) 
 
 file_exist = 0
 for idx, quant in enumerate(quant_list):
-    if comp_Mdot == 'True':
-        print("Compute Mdot!!! First check saved files")
-        filenames = checkpoint_path + "T_ave_Mdot*" 
-        t_filenames_pre = checkpoint_path + "Tave_Mdot_time_"
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True)
+    Print_subtitle("Compute " + str(quant) + "!!! First check saved files")     
+    filenames = checkpoint_path + "T_ave_"+str(quant)+"_vs_r*" 
+    t_filenames_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time_"
+        
+    if idx != len(quant_list)-1 :                                                                                        
+        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))   
+    else:                                                                                                                
+        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time)
+        if verbose == "False":                                                                                           
+            Print_subtitle("Data structure after loading saved files:")                                                  
+            Print_text("Time array:", np.shape(t)[0])                                                                    
+            Print_text("Quantity and its data set:",[[quant_list[idx], np.shape(quant_data[idx])] for idx in range(len(quant_list))])
+            Print_text("Starting iteration existed in the saved data:", save_start)                                                  
+            Print_text("(!) Starting iteration for new computation:", start)                                             
+            Print_text("(!) Expected to read and plot data until iteration:", end)
 
-        print("Data structure after loading saved files!", np.shape(t), np.shape(quant_data[idx]), save_start, start)        
+save_step = 10
+save_quant_file_pre = checkpoint_path + "T_ave_"+str(quant)+"_vs_r"
+save_time_file_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time" 
 
-
-
-save_step = 20
-save_quant_file_pre = checkpoint_path + "T_ave_Mdot" 
-save_time_file_pre = checkpoint_path + "Tave_Mdot_time"  
-
+pbar = tqdm(total=end-start)
 for iter in range(start, end):                                                                                   
     filename = "hist_"+str(iter).zfill(5)+".npz"                                                                 
-    Print_subsubtitle("Reading file:", filename)
+    if verbose == "False":
+        Print_subtitle("Reading file:", filename)
+    else: 
+        pbar.update(n=1)  
     data = np.load(dir+'/'+filename)
     idx_Mdot = -1
     #############################################
@@ -107,10 +128,10 @@ for iter in range(start, end):
     #############################################
     for idx, quant in enumerate(quant_list):
         if quant != 'None':
-                if quant == 'rhovr':                    
+                if quant == 'Mdot':                    
                     idx_Mdot = idx
                     fac = 2 * np.pi * Mdot_to_cgs/Mdot_Edd_cgs
-                    zip_data = list(zip(*data[quant]))
+                    zip_data = list(zip(*data['rhovr']))
                     integrals = []
                     for i in range(len(zip_data)):
                        integral = np.sum([rhovr*np.sin(theta)*dtheta for rhovr, theta, dtheta in zip(zip_data[i], th, dth)])
@@ -121,7 +142,10 @@ for iter in range(start, end):
                     else:
                         quant_data[idx] = np.vstack([quant_data[idx], integrals]) 
                 else:
-                    quant_data[idx].append(list(data[quant]))            
+                    if file_exist == 0:
+                        quant_data[idx].append(list(data[quant]))            
+                    else:
+                        quant_data[idx] = np.vstack([quant_data[idx], list(data[quant])])
 
     # Get time after Mdot data in case saved time files exists
     if file_exist == 0: 
@@ -133,16 +157,17 @@ for iter in range(start, end):
 ########################################################################################################                               
 # Save files since appending above is too slow!!!                                      
 ########################################################################################################
-    if idx_Mdot >= 0:
+    if iter > start and (iter%save_step == 0 or iter == end-1):
         Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre)
-        Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre) 
+        
+        if read_time == "True": 
+            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre)
                  
-quant_data = [q for q in quant_data if q != []]
-quant_list = [q for q in quant_list if q != "None"]
-quant_list = list(map(lambda x: x.replace('rhovr', 'Mdot'), quant_list))
+#quant_data = [q for q in quant_data if q != []]
+#quant_list = [q for q in quant_list if q != "None"]
+#quant_list = list(map(lambda x: x.replace('rhovr', 'Mdot'), quant_list))
 
 if verbose == "False": Print_subsubtitle(np.shape(quant_data), np.shape(quant_data[0]), quant_list)
-
 
 
 
@@ -177,7 +202,8 @@ plot_dic = {"PB":['black', r'$P_B$', P_to_cgs, True],
             "Ek2":['darkorange', r'$E_k^{\theta}$', P_to_cgs, True],                                                                                                                                                
             "Ek3":['chocolate', r'$E_k^{\phi}$', P_to_cgs, True],                                                                                                                                                   
             "PB_total":['maroon', r'$P_B^{total}$', P_to_cgs, True],                                                                                                                                                
-            "Er":['crimson', r'$P_{rad}$', Er_to_Pr*P_to_cgs, True]                                                                                                                                                 
+            "Er":['crimson', r'$P_{rad}$', Er_to_Pr*P_to_cgs, True],                                                                                                                                         
+            "Mdot":['teal', r'$\hline{\dot{M}}/\dot{M}_{Edd}$', 1.0, False]
            } 
 time_start = str(int(t[0]*time_to_sec))
 time_end = str(int(t[-1]*time_to_sec))

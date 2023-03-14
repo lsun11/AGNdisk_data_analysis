@@ -125,7 +125,6 @@ for item in quant_list:
     quant_data.append([]) 
 
 file_exist = 0
-
 for idx, quant in enumerate(quant_list):
     Print_subtitle("Compute " + str(quant) + "!!! First check saved files")
     filenames = checkpoint_path + "T_ave_vs_th_"+str(quant)+"_"+str(radius_select)+"_*"
