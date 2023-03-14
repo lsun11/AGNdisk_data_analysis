@@ -117,11 +117,12 @@ def Input_Arguments(Argv):
 # data: the dataset to load the data, generated outside the function 
 # cutoff: required if only need part of the data, set it to -1 if we want the entire array
 # dir: directory of the data file
+# verbose: If we print verbose ('True') info or detailed ('False') info.
 ########################################################################################################
 
-def Get_All_1D(quant, data, cutoff, dir):
+def Get_All_1D(quant, data, cutoff, dir, verbose):
     result = []
-    Print_text("Function Get_All_1D: Getting the array of", quant)
+    if verbose == "False": Print_text("Function Get_All_1D: Getting the array of", quant)
     if cutoff > 0:
         result.append(data[quant][:cutoff])
     else:
@@ -355,9 +356,10 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
 # end: Ending iteration of the assigned period (needed to save the last iteration)
 # quant_data: Data to save to files
 # save_file_pre: Prefix of the saved filename
+# verbose: If we print verbose ('True') info or detailed ('False') info
 ###############################################################################################################################
 
-def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pre):
+def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pre, verbose):
     name_body = "_"
     for item in [str(save_start), str(iter)]:
         if item != "None":
@@ -366,12 +368,14 @@ def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pr
  
     np.save(save_file_pre + name_body + "iter.npy", quant_data)  
     Print_subsubtitle("Function Save_Files:", save_file_pre + name_body + "iter.npy")
-    Print_text("Now the file contains data with size:", np.shape(quant_data))
+    if verbose == "False":
+        Print_text("Now the file contains data with size:", np.shape(quant_data))
        
     if str(save_start) != "None" and str(iter) != "None":
         filename_pre = save_file_pre + "_" + str(save_start) + "_" + str(iter-save_step) + "_" + "iter.npy"
         if os.path.exists(filename_pre):
-            Print_subsubtitle("Deleting files", filename_pre)
+            if verbose == "False": 
+                Print_subsubtitle("Deleting files", filename_pre)
             os.remove(filename_pre)
 
 

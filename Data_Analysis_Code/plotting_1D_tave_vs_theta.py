@@ -87,8 +87,8 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 if verbose == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)                                                                                                  
 data = np.load(dir+'/'+filename)                                                                                 
 
-r  = Get_All_1D('radius', data, -1, dir)
-th = Get_All_1D('theta', data, -1, dir)                                                                      
+r  = Get_All_1D('radius', data, -1, dir, verbose)
+th = Get_All_1D('theta', data, -1, dir, verbose)                                                              
 
 
 ########################################################################################################
@@ -190,11 +190,11 @@ for iter in range(start, end):
         if iter > start and (iter%save_step == 0 or iter == end-1): 
             for idx, quant in enumerate(quant_list):
                 Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant)
-                Save_Files(save_step, iter, save_start, start, end, quant_data[idx], checkpoint_path + "T_ave_vs_th_"+str(quant)+"_"+str(radius_select)+"_")
+                Save_Files(save_step, iter, save_start, start, end, quant_data[idx], checkpoint_path + "T_ave_vs_th_"+str(quant)+"_"+str(radius_select)+"_", verbose)
  
             if read_time == "True":
                 Print_subtitle("Saving files At Iteration", iter, "quantity: Time")
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre) 
+                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose) 
 
 
 ########################################################################################################

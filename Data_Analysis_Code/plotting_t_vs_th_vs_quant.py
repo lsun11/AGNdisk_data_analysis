@@ -85,8 +85,8 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 if verbose == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename) 
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
-r = Get_All_1D('radius', data, -1, dir)                   
-th = Get_All_1D('theta', data, -1, dir)                                                                         
+r = Get_All_1D('radius', data, -1, dir, verbose)   
+th = Get_All_1D('theta', data, -1, dir, verbose)                                                                      
 
 
 ########################################################################################################                        
@@ -248,22 +248,22 @@ for iter in range(start, end):
         if iter > start and (iter%save_step == 0 or iter == end-1):  
             idx = 0
             if quant1 != "None":  
-                Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx]) 
-                Save_Files(save_step, iter, save_start, start, end, quant1_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_")
+                if verbose == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx]) 
+                Save_Files(save_step, iter, save_start, start, end, quant1_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", verbose)
                 idx += 1
             if quant2 != "None":
-                Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, quant2_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_") 
+                if verbose == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
+                Save_Files(save_step, iter, save_start, start, end, quant2_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", verbose) 
                 idx += 1
             if plot_phot == "Y":
-                Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, iphot_upper_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_")
+                if verbose == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
+                Save_Files(save_step, iter, save_start, start, end, iphot_upper_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", verbose)
                 idx += 1 
-                Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                  
-                Save_Files(save_step, iter, save_start, start, end, iphot_lower_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_")
+                if verbose == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                  
+                Save_Files(save_step, iter, save_start, start, end, iphot_lower_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", verbose)
             if read_time == "True":
-                Print_subtitle("Saving time At Iteration", iter)
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre)
+                if verbose == "False": Print_subtitle("Saving time At Iteration", iter)
+                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose)
 
 if verbose == "False": Print_subtitle("Done reading data!")                                                                                
 if verbose == "False": Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data))
@@ -345,7 +345,7 @@ ylabel = r'$\theta(^o)$'
 ################## Logscale of q has been taken care of, set log_q to False here ###################################################################
 ax1 = Plotting_Mesh_YX(t, th, quant1_data, time_to_sec, rad_to_deg, fac, False, False, True, color, None, None, None, None, title, xlabel, ylabel, cbar_str, font)
 
-savename = save_path + str(quant1) + 'vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(start) + '_' +str(end) + '_' + 'plot.png' 
+savename = save_path + str(quant1) + 'vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(save_start) + '_' +str(end) + '_' + 'plot.png' 
 ################## Plot the photosphere curve ######################################################################################################
 if plot_phot == "Y":
     phot_th_upper = [th[it]*rad_to_deg for it in iphot_upper_total]                                                                                                                                                                  

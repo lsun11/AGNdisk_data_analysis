@@ -1,5 +1,5 @@
 #THIS SCRIPT PLOTS R*SIN(THETA)(X), R*COS(THETA)(Y), VS QUANTITY, AT A GIVEN TIME
-# Example command python plotting_costh_vs_sinth_vs_quant.py Wedge8_2 rho sigma_p 2000 Y
+# Example command python plotting_costh_vs_sinth_vs_quant.py Wedge8_2 rho sigma_p 2000 Y False
 
 
 import numpy as np
@@ -28,6 +28,7 @@ quant1 = argv[2]       # quantity to plot
 quant2 = argv[3]       # aux quantitym can be None
 iter = argv[4]   # select iteration(time) to make the plot
 plot_phot = argv[5]     # "Y" or "N"
+verbose   = argv[6]
 #start = int(argv[6])
 #end   = int(argv[7])
 ######################################################################################################## 
@@ -63,8 +64,8 @@ filename = "hist_"+str(iter).zfill(5)+".npz"
 Print_subtitle("Getting Radius and Theta arrays, using file:", filename) 
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
-r = Get_All_1D('radius', data, -1, dir)                   
-th = Get_All_1D('theta', data, -1, dir)                                                                 
+r = Get_All_1D('radius', data, -1, dir, verbose)  
+th = Get_All_1D('theta', data, -1, dir, verbose)                                                           
 
         
 ########################################################################################################

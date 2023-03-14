@@ -1,6 +1,6 @@
 #THIS SCRIPT PLOTS TIME(X), RADIUS(Y), VS QUANTUTY, AT A GIVEN RADIUS
-# Example1 command python plotting_t_vs_r_vs_quant.py Wedge8_2 surface_density None 90.0 3000 3500
-# Example2 command python plotting_t_vs_r_vs_quant.py Wedge8_2 kappa rho 90.0 3000 3500
+# Example1 command python plotting_t_vs_r_vs_quant.py Wedge8_2 surface_density None 90.0 3000 3500 False
+# Example2 command python plotting_t_vs_r_vs_quant.py Wedge8_2 kappa rho 90.0 3000 3500 False
 
 print("========================== Starting plotting_t_vs_r_vs_quant.py =============================")
 import numpy as np
@@ -38,6 +38,7 @@ quant2 = argv[3]        # optional
 theta_select = argv[4]  # in degree, from 0 to 180
 start = int(argv[5])
 end   = int(argv[6])
+verbose = argv[7]
 ######################################################################################################## 
 
 
@@ -72,8 +73,8 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 print(filename)                                                                                                     
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
-r = Get_All_1D('radius', data, -1, dir)                   
-th = Get_All_1D('theta', data, -1, dir)                                                                         
+r = Get_All_1D('radius', data, -1, dir, verbose) 
+th = Get_All_1D('theta', data, -1, dir, verbose)                                                                 
 
 ########################################################################################################                         
 # Find the index of theta_select

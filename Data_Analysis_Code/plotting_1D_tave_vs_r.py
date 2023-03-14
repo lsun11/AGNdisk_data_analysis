@@ -67,8 +67,8 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 if verbose == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)      
 data = np.load(dir+'/'+filename)                                                                                 
 
-r  = Get_All_1D('radius', data, -1, dir)
-th = Get_All_1D('theta', data, -1, dir)                                                                      
+r  = Get_All_1D('radius', data, -1, dir, verbose)
+th = Get_All_1D('theta', data, -1, dir, verbose)                                                                      
 ########### Get the differential theta array ###########################################################
 dth = list(np.diff(th))                                                                                                         
 dth.append(dth[-1])
@@ -158,10 +158,10 @@ for iter in range(start, end):
 # Save files since appending above is too slow!!!                                      
 ########################################################################################################
     if iter > start and (iter%save_step == 0 or iter == end-1):
-        Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre)
+        Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre, verbose)
         
         if read_time == "True": 
-            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre)
+            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose)
                  
 #quant_data = [q for q in quant_data if q != []]
 #quant_list = [q for q in quant_list if q != "None"]

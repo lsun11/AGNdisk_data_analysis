@@ -80,9 +80,9 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 print(filename)                                                                                                      
 data = np.load(dir+'/'+filename)                         
 
-r = Get_All_1D('radius', data, 1100, dir)   
+r = Get_All_1D('radius', data, 1100, dir, verbose)   
 if deg == 'photosphere':
-    th = Get_All_1D('theta', data, -1, dir)
+    th = Get_All_1D('theta', data, -1, dir, verbose)
 ########################################################################################################  
 
 
@@ -169,10 +169,10 @@ for iter in range(start, end):
            
             if iter > start and (iter%save_step == 0 or iter == end-1):             
                 save_quant_file_pre = checkpoint_path + "T_var_Er"
-                Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre)
+                Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre, verbose)
 
                 save_time_file_pre = checkpoint_path + "T_var_time"
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre) 
+                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose) 
 
 ########################################################################################################
 # Set file_exist to 0. This is necessary if the script is called multiple times at once 
