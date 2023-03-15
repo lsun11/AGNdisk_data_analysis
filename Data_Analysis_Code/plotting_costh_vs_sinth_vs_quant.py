@@ -29,7 +29,7 @@ quant2 = argv[3]       # aux quantitym can be None
 iter = argv[4]   # select iteration(time) to make the plot
 plot_phot = argv[5]     # "Y" or "N"
 ph_mode   = int(argv[6])
-verbose   = argv[7]
+succinct   = argv[7]
 #start = int(argv[6])
 #end   = int(argv[7])
 ######################################################################################################## 
@@ -65,8 +65,8 @@ filename = "hist_"+str(iter).zfill(5)+".npz"
 Print_subtitle("Getting Radius and Theta arrays, using file:", filename) 
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
-r = Get_All_1D('radius', data, -1, dir, verbose)  
-th = Get_All_1D('theta', data, -1, dir, verbose)                                                           
+r = Get_All_1D('radius', data, -1, dir, succinct)  
+th = Get_All_1D('theta', data, -1, dir, succincts)                                                           
 
         
 ########################################################################################################
