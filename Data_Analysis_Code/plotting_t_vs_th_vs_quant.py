@@ -2,28 +2,29 @@
 #THIS SCRIPT PLOTS TIME(X), THETA(Y), VS QUANTUTY, AT A GIVEN RADIUS
 ############################################################################################################################################
 #Arguments:                                                                                                                                                                                                         
-# 1. case (Wedge8, Wedge9B, Wedge10)  2. quantity1  3. quantity2
-# 4. select radius  5. plot photosphere  6. start iteration  7. end iteration           
-# 8. photosphere mode (-1: pure Rossland/Planck, 1: using sqrt( (kappa-kappaes)*kappaes), 2: using sqrt(kappa*kappaes))
-# 9. read/loading time files? 9. succinct output? 
+# 1. case (Wedge8, Wedge9B, Wedge10)  2. quantity1  3. quantity2  4. quantity3
+# 5. select radius  6. plot photosphere  7. start iteration  8. end iteration           
+# 9. photosphere mode (-1: pure Rossland/Planck, 1: using sqrt( (kappa-kappaes)*kappaes), 2: using sqrt(kappa*kappaes))
+# 10. read/loading time files? 11. succinct output? 
 
 
 # Example command1: make plots of density vs tims vs theta at radius= 120 rg with photosphere using sqrt(kappa*kappaes) for photosphere
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p 120 Y 3000 3500 2 True False
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p None 120 Y 3000 3500 2 True False
 
 # Example command2: Make a series of plots in command1 at r = 120, 140, 160, 180 and 200 rg:
-# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p $i Y 2000 3500 -1 True False; done 
+# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p None $i Y 2000 3500 -1 True False; done 
 
 # Example command3: Output ONLY quantity(e.g. rho) checkpoint files: 
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho None 140 N 2000 3500 -1 False False
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho None None 140 N 2000 3500 -1 False False
 
 # Example command4: Output ONLY Time checkpoint files: 
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 None None 180 N 2000 3500 -1 True False
+# python plotting_t_vs_th_vs_quant.py Wedge8_2 None None None 180 N 2000 3500 -1 True False
 
 # Example command5: make plots of temperature vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 Temp sigma 120 Y 2000 3658 -1 True False 
+# python plotting_t_vs_th_vs_quant.py Wedge8 Temp sigma None 120 Y 2000 3658 -1 True False 
 
-
+# Example command6: make plots of BrBphi - rho_rrho_phi vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)                                            
+# python plotting_t_vs_th_vs_quant.py Wedge8 Ang_rp sigma None 120 Y 2000 3658 -1 True False
 
 
 import numpy as np
@@ -56,13 +57,14 @@ Input_Arguments(argv)
 case = argv[1]
 quant1 = argv[2]
 quant2 = argv[3]
-radius_select = argv[4]
-plot_phot = argv[5]     # "Y" or "N"
-start = int(argv[6])
-end   = int(argv[7])
-ph_mode = int(argv[8])
-read_time = argv[9]
-succinct   = argv[10]
+quant3 = argv[4]
+radius_select = argv[5]
+plot_phot = argv[6]     # "Y" or "N"
+start = int(argv[7])
+end   = int(argv[8])
+ph_mode = int(argv[9])
+read_time = argv[10]
+succinct   = argv[11]
 
 ########################################################################################################            
 #  set paths based on cases                                                                                         
@@ -103,6 +105,8 @@ th = Get_All_1D('theta', data, -1, dir, succinct)
 ########################################################################################################    
 quant_list = []
 comp_T = 0
+comp_angmom_rp = 0
+comp_angmom_tp = 0
 
 if quant1 == "Temp":
     comp_T = 1
@@ -110,12 +114,26 @@ if quant1 == "Temp":
 elif quant2 == "Temp":                                                                                                     
     comp_T = 1
     quant2 = "Er"
+if quant1 == "Ang_rp":                                                                                            
+    comp_angmom_rp = 1                                                                                                  
+    quant1 = "rhovrvphi"                                                                                               
+    quant3 = "BrBp"
+if quant1 == "Ang_tp":                                                                                          
+    comp_angmom_tp = 1                                                                                          
+    quant1 = "rhovtvphi"                                                                                        
+    quant3 = "BtBp"
+if quant2 == "Ang_rp" or quant2 == "Ang_tp":
+    Print_subtitle("Please set Ang_rp or Ang_tp to quant1!!!!")
+    os.sys.exit(0)
+
 
 
 if quant1 != "None":
    quant_list.append(quant1)
 if quant2 != "None":                                                                                                
     quant_list.append(quant2)
+if quant3 != "None":                                                                                                                                                 
+    quant_list.append(quant3)
 if plot_phot == "Y":
     quant_list.extend(["iphot_upper", "iphot_lower"])
 
@@ -126,6 +144,7 @@ if succinct == "False": Print_subsubtitle("The list of quantities we want to wor
 t 	    = []
 quant1_data = []
 quant2_data = []
+quant3_data = []
 iphot_upper_total = []
 iphot_lower_total = []
 file_exist = 0
@@ -144,6 +163,11 @@ if plot_phot == "Y":
         if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
         quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)) 
+        idx += 1
+    if quant3 != "None":                                                                                                                                             
+        if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                                                    
+        filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"                                                                           
+        quant3_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                         
         idx += 1
     if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
@@ -169,13 +193,28 @@ else:
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
 
     if quant2 != "None":
-        if succinct == "False": quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time))               
+        Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")
+        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))    
         idx += 1 
         Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*" 
-        t, quant2_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time))  
+        if quant3 != "None":
+            quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))  
+            idx += 1                                                                                                                                                                  
+            Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")    
+            filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"    
+            t, quant3_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))  
+        else:
+            t, quant2_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))
+    elif quant3 != "None":
+        Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")
+        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                                      
+        idx += 1       
+        Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                     
+        filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*" 
+        t, quant3_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))
     else:
-        t, quant1_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time)) 
+        t, quant1_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)) 
 
     if succinct == "False": 
         Print_subtitle("Data structure after loading saved files:")                                                                                               
@@ -218,12 +257,16 @@ for iter in range(start, end):
                     quant1_data.append( [q[radius_idx] for q in data[quant1]])
                 if quant2 != "None":
                     quant2_data.append( [q[radius_idx] for q in data[quant2]])
+                if quant3 != "None":                                                                                                                                 
+                    quant3_data.append( [q[radius_idx] for q in data[quant3]])
             else:
                 if quant1 != "None":
                     quant1_data = np.vstack( [quant1_data, [q[radius_idx] for q in data[quant1]] ] )
                 if quant2 != "None":  
                     quant2_data = np.vstack( [quant2_data, [q[radius_idx] for q in data[quant2]] ] )
-            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":", np.shape(quant2_data))
+                if quant3 != "None":                                                                                                                                 
+                    quant3_data = np.vstack( [quant3_data, [q[radius_idx] for q in data[quant3]] ] )
+            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":", np.shape(quant2_data), quant3+":", np.shape(quant3_data))
 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!
                 if succinct == "False": Print_text("Finding the photosphere!")
@@ -247,12 +290,16 @@ for iter in range(start, end):
                     quant1_data.append(data[quant1])
                 if quant2 != "None":  
                     quant2_data.append(data[quant2])
+                if quant3 != "None":                                                                                                                                 
+                    quant3_data.append(data[quant3])
             else:
                 if quant1 != "None":  
                     quant1_data = np.vstack( [quant1_data, data[quant1]])
                 if quant2 != "None":   
                     quant2_data = np.vstack( [quant2_data, data[quant2]])
-            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":",np.shape(quant2_data)) 
+                if quant3 != "None":                                                                                                                                 
+                    quant3_data = np.vstack( [quant2_data, data[quant3]])
+            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":",np.shape(quant2_data), quant3+":", np.shape(quant3_data)) 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!                                                                                            
                 Print_text("Finding the photosphere!")  
                 if ph_mode < 0: 
@@ -279,6 +326,10 @@ for iter in range(start, end):
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
                 Save_Files(save_step, iter, save_start, start, end, quant2_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct) 
                 idx += 1
+            if quant3 != "None":                                                                                                                                     
+                if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                             
+                Save_Files(save_step, iter, save_start, start, end, quant3_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)    
+                idx += 1
             if plot_phot == "Y":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
                 Save_Files(save_step, iter, save_start, start, end, iphot_upper_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
@@ -304,6 +355,18 @@ if comp_T == 1:
     elif quant2 == 'Er':                                                                                                   
         quant2_data = [[qq**(0.25) for qq in q] for q in quant2_data] 
     quant1 = "Temp"
+
+if comp_angmom_rp == 1:
+   if succinct == "False": Print_subtitle("Computing rhovrvphi - BrBp!!!") 
+   print(np.shape(quant1_data), np.shape(quant3_data))
+   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)]
+   quant1 = "Ang_rp"
+if comp_angmom_tp == 1:                                                                                         
+   if succinct == "False": Print_subtitle("Computing rhovtvphi - BtBp!!!")                                      
+   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)] 
+   quant1 = "Ang_tp" 
+
+print(np.shape(quant1))
 
 Print_title(sp30, "Start Plotting!!!!", sp30)                                                                     
 ########################################################################################################          
@@ -365,6 +428,21 @@ elif str(str(quant1)[0:4]) == "Temp": # no _2
     fac = (P_to_cgs/rad_const)**0.25
     logscale = True
     phot_color = 'black'
+elif str(str(quant1)[0:6]) == "Ang_rp":
+    color = 'winter'
+    pre_str = 'B_rB_{\\phi} - \\rho_r\\rho_{\\phi}'
+    cbar_str = r'$B_rB_{\phi} - \rho_r\rho_{\phi}$'
+    fac = P_to_cgs
+    logscale = False                                                                                             
+    phot_color = 'white' 
+elif str(str(quant1)[0:6]) == "Ang_rt":
+    color = 'winter'                                                                                            
+    pre_str = 'B_{\\theta}B_{\\phi} - \\rho_{\\theta}\\rho_{\\phi}'                                                             
+    cbar_str = r'$B_{\theta}B_{\phi} - \rho_{\theta}\rho_{\phi}$'                                                             
+    fac = Pressure_to_cgs                                                                                       
+    logscale = False                                                                                            
+    phot_color = 'white'
+
 
 Theta, Time = np.meshgrid(th,t)
 
@@ -386,7 +464,7 @@ ylabel = r'$\theta(^o)$'
 
 
 ################## Logscale of q has been taken care of, set log_q to False here ###################################################################
-ax1 = Plotting_Mesh_YX(t, th, quant1_data, time_to_sec, rad_to_deg, fac, False, False, True, color, None, None, None, None, title, xlabel, ylabel, cbar_str, font)
+ax1 = Plotting_Mesh_YX(t, th, quant1_data, time_to_sec, rad_to_deg, fac, False, False, logscale, color, None, None, None, None, title, xlabel, ylabel, cbar_str, font)
 
 savename = save_path + str(quant1) + 'vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(save_start) + '_' +str(end) + '_' + 'plot.png' 
 ################## Plot the photosphere curve ######################################################################################################
