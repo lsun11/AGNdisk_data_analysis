@@ -4,7 +4,7 @@
 # Arguments:
 # 1. case (Wedge8, Wedge9B, Wedge10)  2. start iteration  3. end iteration 
 # 4-7. list of reading/loading quantities  8. compute Mdot?
-# 9. read/load time files? (set to False if we want to generate quantity files only)  10. Verbose output?
+# 9. read/load time files? (set to False if we want to generate quantity files only)  10. succinct output?
 ############################################################################################################################################ 
 #Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8_2 2000 3568 rhovr None None None True True False
 
@@ -35,7 +35,7 @@ end = int(argv[3])
 quant_list = [argv[4], argv[5], argv[6], argv[7]] # the last 3 are optional 
 comp_Mdot = argv[8]
 read_time = argv[9]
-verbose = argv[10]
+succinct = argv[10]
 
 ########################################################################################################         
 #  set paths based on cases                                                                                      
@@ -64,11 +64,11 @@ dir = Data_dir + 'DATA' + str(case)
 # Any hist file can be used to generate these:                                                                   
 ########################################################################################################         
 filename = "hist_"+str(start).zfill(5)+".npz"                                                                    
-if verbose == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)      
+if succinct == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)      
 data = np.load(dir+'/'+filename)                                                                                 
 
-r  = Get_All_1D('radius', data, -1, dir, verbose)
-th = Get_All_1D('theta', data, -1, dir, verbose)                                                                      
+r  = Get_All_1D('radius', data, -1, dir, succinct)
+th = Get_All_1D('theta', data, -1, dir, succinct)                                                                      
 ########### Get the differential theta array ###########################################################
 dth = list(np.diff(th))                                                                                                         
 dth.append(dth[-1])
@@ -85,7 +85,7 @@ for idx, item in enumerate(quant_list):
         quant_list[idx:idx] = ['Mdot']
         quant_list.remove('rhovr')
 
-if verbose == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
+if succinct == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
 
 t = []                                                                                                                   
 quant_data = []                                                                                                          
@@ -99,10 +99,10 @@ for idx, quant in enumerate(quant_list):
     t_filenames_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time_"
         
     if idx != len(quant_list)-1 :                                                                                        
-        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))   
+        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))   
     else:                                                                                                                
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, verbose)
-        if verbose == "False":                                                                                           
+        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)
+        if succinct == "False":                                                                                           
             Print_subtitle("Data structure after loading saved files:")                                                  
             Print_text("Time array:", np.shape(t)[0])                                                                    
             Print_text("Quantity and its data set:",[[quant_list[idx], np.shape(quant_data[idx])] for idx in range(len(quant_list))])
@@ -117,7 +117,7 @@ save_time_file_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time"
 pbar = tqdm(total=end-start+1)
 for iter in range(start, end):                                                                                   
     filename = "hist_"+str(iter).zfill(5)+".npz"                                                                 
-    if verbose == "False":
+    if succinct == "False":
         Print_subtitle("Reading file:", filename)
     else: 
         pbar.update(n=1)  
@@ -152,22 +152,22 @@ for iter in range(start, end):
         t.append(Get_Time(data, dir))  
     else:
         t = np.append(t, Get_Time(data, dir))
-    if verbose == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])  
+    if succinct == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])  
 
 ########################################################################################################                               
 # Save files since appending above is too slow!!!                                      
 ########################################################################################################
     if iter > start and (iter%save_step == 0 or iter == end-1):
-        Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre, verbose)
+        Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre, succinct)
         
         if read_time == "True": 
-            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose)
+            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
                  
 #quant_data = [q for q in quant_data if q != []]
 #quant_list = [q for q in quant_list if q != "None"]
 #quant_list = list(map(lambda x: x.replace('rhovr', 'Mdot'), quant_list))
 
-if verbose == "False": Print_subsubtitle(np.shape(quant_data), np.shape(quant_data[0]), quant_list)
+if succinct == "False": Print_subsubtitle(np.shape(quant_data), np.shape(quant_data[0]), quant_list)
 
 
 

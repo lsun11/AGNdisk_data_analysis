@@ -5,7 +5,7 @@
 # Arguments:
 # 1. case (Wedge8, Wedge9B, Wedge10)  2. start iteration  3. end iteration 
 # 4. select radius in rg  5-8. list of reading/loading quantities  9. plotting against which quantity (theta or time)   
-# 10. read/load time files? (set to False if we want to generate quantity files only)  11. Verbose output? 
+# 10. read/load time files? (set to False if we want to generate quantity files only)  11. succinct output? 
 ############################################################################################################################################ 
 #Example command 1 (plotting different pressure at r = 120rg): python plotting_1D_tave_vs_theta.py Wedge8 2000 3658 120 PB_r1 pg_r1 rhovt2 None vs_theta True False
 #Example command 2 (plotting different pressure at r = 180rg): python plotting_1D_tave_vs_theta.py Wedge8 2000 3658 180 PB_r4 pg_r4 rhovt2 None vs_theta True False
@@ -46,7 +46,7 @@ radius_select = argv[4]
 quant_list = [argv[5], argv[6], argv[7], argv[8]] # the last 3 are optional 
 x_axis     = argv[9]
 read_time  = argv[10]
-verbose    = argv[11]
+succinct    = argv[11]
 
 if x_axis == "vs_theta":
     plot_string = "Theta"
@@ -85,11 +85,11 @@ dir = Data_dir + 'DATA' + str(case)
 # Any hist file can be used to generate these:                                                                   
 ########################################################################################################         
 filename = "hist_"+str(start).zfill(5)+".npz"                                                                    
-if verbose == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)                                                                                                  
+if succinct == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename)                                                                                                  
 data = np.load(dir+'/'+filename)                                                                                 
 
-r  = Get_All_1D('radius', data, -1, dir, verbose)
-th = Get_All_1D('theta', data, -1, dir, verbose)                                                              
+r  = Get_All_1D('radius', data, -1, dir, succinct)
+th = Get_All_1D('theta', data, -1, dir, succinct)                                                              
 
 
 ########################################################################################################
@@ -124,7 +124,7 @@ for idx, item in enumerate(quant_list):
         quant_list[idx:idx] = ['rhovr']
         quant_list.remove('Mdot')
 
-if verbose == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
+if succinct == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
 
 
 t = []                                                                                                                   
@@ -139,10 +139,10 @@ for idx, quant in enumerate(quant_list):
     t_filenames_pre = checkpoint_path + "Tave_vs_theta_time_"+str(radius_select)+"__" 
 
     if idx != len(quant_list)-1 :
-        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, verbose))
+        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
     else:
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, verbose)
-        if verbose == "False":
+        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)
+        if succinct == "False":
             Print_subtitle("Data structure after loading saved files:")
             Print_text("Time array:", np.shape(t)[0])
             Print_text("Quantity and its data set:",[[quant_list[idx], np.shape(quant_data[idx])] for idx in range(len(quant_list))])
@@ -168,7 +168,7 @@ for iter in range(start, end):
         #######################################
         for idx, quant in enumerate(quant_list):
             if quant != 'None':
-                if verbose == "False": Print_text("Reading quanity "+str(quant))
+                if succinct == "False": Print_text("Reading quanity "+str(quant))
                 if len(np.shape(data[quant])) ==  1:   # 1D
                     if file_exist == 0:
                         quant_data[idx].append(list(data[quant]))
@@ -190,7 +190,7 @@ for iter in range(start, end):
             t = np.append(t, Get_Time(data, dir))    
         else: 
             t.append(Get_Time(data, dir)) 
-        if verbose == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])
+        if succinct == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])
 
 ########################################################################################################       
 # Save files since appending above is too slow!!!  
@@ -198,11 +198,11 @@ for iter in range(start, end):
         if iter > start and (iter%save_step == 0 or iter == end-1): 
             for idx, quant in enumerate(quant_list):
                 Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant)
-                Save_Files(save_step, iter, save_start, start, end, quant_data[idx], checkpoint_path + "T_ave_vs_th_"+str(quant)+"_"+str(radius_select)+"_", verbose)
+                Save_Files(save_step, iter, save_start, start, end, quant_data[idx], checkpoint_path + "T_ave_vs_th_"+str(quant)+"_"+str(radius_select)+"_", succinct)
  
             if read_time == "True":
                 Print_subtitle("Saving files At Iteration", iter, "quantity: Time")
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose) 
+                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct) 
 
 
 ########################################################################################################
@@ -228,7 +228,7 @@ if rhovt2_flag == 1:
     quant_list.remove('rhovt')                                                                              
     quant_list.remove('rho')                                                                                    
     quant_list.insert(len(quant_list),'rhovt2') 
-    if verbose == "False": Print_subsubtitle("After computing rhovt^2, Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])
+    if succinct == "False": Print_subsubtitle("After computing rhovt^2, Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])
  
 ########################################################################################################                                                                                                            
 # Compute PB_total = sqrt(ST_PB1^2 + ST_PB2^2 + ST_PB3^2)/2 = sqrt(PB1^2 + PB2^2 + PB3^2)
@@ -302,7 +302,7 @@ for idx, lists in enumerate(quant_data):
 #print(ave_quant_data, np.shape(ave_quant_data))
 
 
-if verbose == "False":
+if succinct == "False":
     Print_subtitle("The final qunaities for plotting are:", quant_list)
     Print_subsubtitle("Checking the plotting quantity data structure:")
     Print_text("Time, theta, radius:", np.shape(t), np.shape(th), np.shape(r))
@@ -349,7 +349,7 @@ if quant_list[0][0] == 'M':
     y_label += 'Accretion Rate'
 if log_q:
     y_label += ')'
-if verbose == "False": Print_subtitle("Y-label of the plot:", y_label)
+if succinct == "False": Print_subtitle("Y-label of the plot:", y_label)
 ########################################################################################################
 
 if x_axis == "vs_theta":
@@ -377,10 +377,10 @@ for q_idx, item in enumerate(quant_list):
         color, label_q, q_fac, log_q = plot_dic[item.split('_')[0]] 
     else:                                                                                                                                                                                                               
         color, label_q, q_fac, log_q = plot_dic[item]
-    if verbose == "False": Print_text("Plotting quantity ", item, " using color: ", color, " with label: ", label_q, " unit factor: ", q_fac, " log scale? ", log_q)
+    if succinct == "False": Print_text("Plotting quantity ", item, " using color: ", color, " with label: ", label_q, " unit factor: ", q_fac, " log scale? ", log_q)
     Plotting_1D(ax1, x_q, x_fac, False, ave_quant_data[q_idx], q_fac, log_q, color, xlabel, ylabel, label_q, font)  
 
-if verbose == "False": Print_subtitle("Save the plot as:", savename)    
+if succinct == "False": Print_subtitle("Save the plot as:", savename)    
 plt.savefig(savename,format='png',dpi=300)
 
 Print_title("========================== Done plotting_1D_tave_vs_theta.py ==========================")

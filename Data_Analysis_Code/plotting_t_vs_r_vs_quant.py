@@ -38,7 +38,7 @@ quant2 = argv[3]        # optional
 theta_select = argv[4]  # in degree, from 0 to 180
 start = int(argv[5])
 end   = int(argv[6])
-verbose = argv[7]
+succinct = argv[7]
 ######################################################################################################## 
 
 
@@ -73,8 +73,8 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 print(filename)                                                                                                     
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
-r = Get_All_1D('radius', data, -1, dir, verbose) 
-th = Get_All_1D('theta', data, -1, dir, verbose)                                                                 
+r = Get_All_1D('radius', data, -1, dir, succinct) 
+th = Get_All_1D('theta', data, -1, dir, succinct)                                                                 
 
 ########################################################################################################                         
 # Find the index of theta_select

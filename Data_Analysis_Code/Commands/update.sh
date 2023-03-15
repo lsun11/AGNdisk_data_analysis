@@ -39,10 +39,10 @@ code_path=/home/lunan/mnt/AGNWedge8_product/Data_Analysis_Code
 
 load_time=True
 ph_mode=-1
-verbose=True
+succinct=True
 
 ### Make t-average pressure vs theta plot (PB total / pg / Ek2 / Er) at r = 120, 140, 160, 180
-##python $code_path/plotting_1D_tave_vs_theta.py $case $start $end $radius PB_total $p_gas Ek2 Er vs_theta $load_time $verbose
+##python $code_path/plotting_1D_tave_vs_theta.py $case $start $end $radius PB_total $p_gas Ek2 Er vs_theta $load_time $succinct
 
 ### Make quantity-vs-t-vs-theta plots at specific raidus with/without photosphere
-python $code_path/plotting_t_vs_th_vs_quant.py $case rho sigma $radius Y $start $end $ph_mode $load_time $verbose
+python $code_path/plotting_t_vs_th_vs_quant.py $case rho sigma $radius Y $start $end $ph_mode $load_time $succinct

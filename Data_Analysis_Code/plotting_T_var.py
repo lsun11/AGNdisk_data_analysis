@@ -31,7 +31,7 @@ deg = argv[5]    #midplane/80/70/photosphere
 quant2 = argv[6] #rho for computing photosphere
 quant3 = argv[7] #kappa for computing photosphere
 ph_mode = int(argv[8])
-verbose = argv[9]
+succinct = argv[9]
 ########################################################################################################  
 
 
@@ -81,9 +81,9 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 print(filename)                                                                                                      
 data = np.load(dir+'/'+filename)                         
 
-r = Get_All_1D('radius', data, 1100, dir, verbose)   
+r = Get_All_1D('radius', data, 1100, dir, succinct)   
 if deg == 'photosphere':
-    th = Get_All_1D('theta', data, -1, dir, verbose)
+    th = Get_All_1D('theta', data, -1, dir, succinct)
 ########################################################################################################  
 
 
@@ -111,7 +111,7 @@ if deg == "photosphere":
     filenames = checkpoint_path + "T_var_Er*"
     t_filenames_pre = checkpoint_path + "T_var_time_"
     
-    t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True, verbose)
+    t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True, succinct)
 ######################################################################################################## 
 #quant_data = quant_data[:-2]
 print(np.shape(t), np.shape(quant_data), file_exist)
@@ -172,10 +172,10 @@ for iter in range(start, end):
            
             if iter > start and (iter%save_step == 0 or iter == end-1):             
                 save_quant_file_pre = checkpoint_path + "T_var_Er"
-                Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre, verbose)
+                Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre, succinct)
 
                 save_time_file_pre = checkpoint_path + "T_var_time"
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, verbose) 
+                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct) 
 
 ########################################################################################################
 # Set file_exist to 0. This is necessary if the script is called multiple times at once 
