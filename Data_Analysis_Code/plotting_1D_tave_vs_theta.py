@@ -11,6 +11,7 @@
 #Example command 2 (plotting different pressure at r = 180rg): python plotting_1D_tave_vs_theta.py Wedge8 2000 3658 180 PB_r4 pg_r4 rhovt2 None vs_theta True False
 #Example command 3 (plotting diff B-field components): python plotting_1D_tave_vs_theta.py Wedge8_2 2000 3658 140 B1_r2 B2_r2 B3_r2 None vs_theta True False
 #Example command 4 (plotting TOTAL Magnetic Pressure): python plotting_1D_tave_vs_theta.py Wedge8 2000 3658 120 PB_total pg_r1 Ek2 Er vs_theta True False
+#Example command 5 (plotting Accretion Rate): python plotting_1D_tave_vs_theta.py Wedge8 2000 3658 120 Mdot None None None vs_theta True False
 
 #THIS CAN ALSO PLOT THETA AVERAGE QUANTITY VS T AT A FIX RADIUS, BY CHANGING PLOTTING MODE TO vs_t
 # Notice that vs_t code can use the same saved checkpoint files as vs_theta, no need to read everything again!
@@ -96,12 +97,15 @@ th = Get_All_1D('theta', data, -1, dir, verbose)
 ########################################################################################################
 # First convert quant_list to what we want
 # 1. Remove all "None"s
-# 2. If PB_total is included, add ST_PB1, ST_PB2, ST_PB3 to the list
+# 2. 1) If PB_total is included, add ST_PB1, ST_PB2, ST_PB3 to the list
+#    2) If rho_vt2 is included, add rhovt, rho to the list
+#    3) If Mdot is included, add rhovr to the list
 ######################################################################################################## 
 quant_list = list(filter(lambda a: a != "None", quant_list))
 
 PB_total_flag = 0
 rhovt2_flag = 0 
+Mdot_flag = 0
 
 for idx, item in enumerate(quant_list):
     if item == "PB_total":
@@ -115,6 +119,10 @@ for idx, item in enumerate(quant_list):
         rhovt2_flag = 1      
         quant_list[idx:idx] = ['rhovt', 'rho']                   
         quant_list.remove('rho_vt2')
+    if item == "Mdot":
+        Mdot_flag = 1
+        quant_list[idx:idx] = ['rhovr']
+        quant_list.remove('Mdot')
 
 if verbose == "False": Print_subtitle("The datasets we want to read in are:", quant_list)
 
@@ -227,7 +235,7 @@ if rhovt2_flag == 1:
 # Same. Average the quantity and append to ave_quant_data first  
 ######################################################################################################## 
 if PB_total_flag == 1:
-    print("Compute PB_total!!!")
+    Print_subtitle("Compute PB_total!!!")
     if "_2" in str(case):
        data_PB1 = quant_data[quant_list.index('PB1')]                                                                            
        data_PB2 = quant_data[quant_list.index('PB2')]                                                                                   
@@ -251,6 +259,25 @@ if PB_total_flag == 1:
                     for (list1, list2, list3) in zip (data_PB1, data_PB2, data_PB3) ]    
     ave_data_PB_total = np.mean(data_PB_total, axis = plot_axis) 
 
+########################################################################################################  
+# Compute Mdot = 2pir^2 sin(theta) dtheta rhovr
+# Same. Average the quantity and append to ave_quant_data first
+######################################################################################################## 
+if Mdot_flag == 1:                                                                                                           
+    Print_subtitle("Compute Mdot!!!") 
+    data_rhovr = quant_data[quant_list.index('rhovr')]
+    # delete quantity and list later to aviod empty quant_data
+    #quant_data = np.delete(quant_data, [quant_list.index('rhovr')], 0)
+    #quant_list.remove('rhovr')    
+
+    quant_list.insert(len(quant_list),'Mdot')
+    dth = np.diff(th)    
+    dth = np.append(dth, dth[-1])
+
+    data_Mdot = [  [2.0 * np.pi * rad**2 * np.sin(theta) * dtheta * rhovr for rad, theta, dtheta, rhovr 
+                   in zip(r, th, dth, list_rhovr)]  for list_rhovr in data_rhovr]
+
+    ave_data_Mdot = np.mean(data_Mdot, axis = plot_axis)
 
 ########################################################################################################    
 # Time average the quantities
@@ -260,12 +287,20 @@ for _ in range(len(quant_list)):
     ave_quant_data.append([]) 
 
 for idx, lists in enumerate(quant_data):
+    print(idx, lists, Mdot_flag)
     if len(lists) > 0:
         ave_quant_data[idx] = list(np.mean(lists, axis = plot_axis) )
     if rhovt2_flag == 1:                                                                                              
         ave_quant_data[quant_list.index('rhovt2')] = ave_data_rhovt2                                                  
     if PB_total_flag == 1:                                                                                            
         ave_quant_data[quant_list.index('PB_total')] = ave_data_PB_total 
+    if Mdot_flag == 1:
+        print("Append Mdot", ave_data_Mdot, ave_quant_data[quant_list.index('Mdot')], quant_list.index('Mdot'))        
+        ave_quant_data[quant_list.index('Mdot')] = ave_data_Mdot
+        ave_quant_data = np.delete(ave_quant_data, [quant_list.index('rhovr')], 0) 
+        quant_list.remove('rhovr')
+#print(ave_quant_data, np.shape(ave_quant_data))
+
 
 if verbose == "False":
     Print_subtitle("The final qunaities for plotting are:", quant_list)
@@ -290,7 +325,8 @@ plot_dic = {"PB":['black', r'$P_B$', P_to_cgs, True],
             "Ek2":['darkorange', r'$E_k^{\theta}$', P_to_cgs, True], 
             "Ek3":['chocolate', r'$E_k^{\phi}$', P_to_cgs, True], 
             "PB_total":['maroon', r'$P_B^{total}$', P_to_cgs, True],
-            "Er":['crimson', r'$P_{rad}$', Er_to_Pr*P_to_cgs, True]
+            "Er":['crimson', r'$P_{rad}$', Er_to_Pr*P_to_cgs, True],
+            "Mdot":['teal', r'$\overline{\dot{M}}/\dot{M}_{Edd}$', 1.0, False]
            }
 
 fig, ax1 = plt.subplots(1, 1)
@@ -309,11 +345,12 @@ if quant_list[0][0] == 'P' or quant_list[0][0] == 'p' or quant_list[0][0] == 'r'
     y_label += 'Pressure'
 if quant_list[0][0] == 'B':
     y_label += 'Magnetic Fields'
+if quant_list[0][0] == 'M':
+    y_label += 'Accretion Rate'
 if log_q:
     y_label += ')'
 if verbose == "False": Print_subtitle("Y-label of the plot:", y_label)
 ########################################################################################################
-
 
 if x_axis == "vs_theta":
     t_start = str(int(t[0]*time_to_sec))

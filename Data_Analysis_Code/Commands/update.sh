@@ -1,6 +1,6 @@
 #### This is the most important command file!! It calls all necessary function possible!!!
 case=Wedge8
-radius=120
+radius=140
 
 if [[ $case == "Wedge8" ]]; then
    start=2000

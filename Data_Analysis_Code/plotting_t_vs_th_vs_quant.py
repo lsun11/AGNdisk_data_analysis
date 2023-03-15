@@ -327,6 +327,7 @@ elif str(str(quant1)[0:3]) == "rho":  # no _2
     cbar_str = r'$log_{10}(\rho/\rho_0)$'                                                                                   
     fac  = 1.0/dens_to_cgs                                                                                               
     logscale = True                                                                                              
+    phot_color = 'yellow'
 elif str(str(quant1)[0:2]) == "Er":   # no _2                                                                    
     color = 'PRGn_r'                                                                                             
     pre_str = 'E_r'
@@ -363,7 +364,7 @@ elif str(str(quant1)[0:4]) == "Temp": # no _2
     cbar_str = r'$\log_{10}(T) (K)$'                                                                                               
     fac = (P_to_cgs/rad_const)**0.25
     logscale = True
-
+    phot_color = 'black'
 
 Theta, Time = np.meshgrid(th,t)
 
@@ -393,7 +394,7 @@ if plot_phot == "Y":
     phot_th_upper = [th[it]*rad_to_deg for it in iphot_upper_total]                                                                                                                                                                  
     phot_th_lower = [th[it]*rad_to_deg for it in iphot_lower_total]
     quant_list = [phot_th_upper, phot_th_lower]
-    Plotting_1D(ax1, t, time_to_sec, False, quant_list, 1.0, False, 'y', None, None, None, font)
+    Plotting_1D(ax1, t, time_to_sec, False, quant_list, 1.0, False, phot_color, None, None, None, font)
     ### Add an extra part of the filename
     split_name = savename.split('_')
     split_name.insert(-1, 'photosphere')
