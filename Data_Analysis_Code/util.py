@@ -117,12 +117,12 @@ def Input_Arguments(Argv):
 # data: the dataset to load the data, generated outside the function 
 # cutoff: required if only need part of the data, set it to -1 if we want the entire array
 # dir: directory of the data file
-# verbose: If we print verbose ('True') info or detailed ('False') info.
+# succinct: If we print succinct ('True') info or detailed ('False') info.
 ########################################################################################################
 
-def Get_All_1D(quant, data, cutoff, dir, verbose):
+def Get_All_1D(quant, data, cutoff, dir, succinct):
     result = []
-    if verbose == "False": Print_text("Function Get_All_1D: Getting the array of", quant)
+    if succinct == "False": Print_text("Function Get_All_1D: Getting the array of", quant)
     if cutoff > 0:
         result.append(data[quant][:cutoff])
     else:
@@ -270,10 +270,10 @@ def Get_Photosphere2(theta_data, kappa_data, rho_data, radius, mode, hemi):
 # end:   Assigned ending iteration to compare with saved files:
 # output_all: Output everything? True (t, quant_data, file_exist, save_start, start) | False (quant_data only)
 # read_time: Read in time file? Set it False if you only want to regenerate some quantity files
-# verbose: If we print verbose ('True') info or detailed ('False') info.
+# succinct: If we print succinct ('True') info or detailed ('False') info.
 ################################################################################################################################
 
-def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_all, read_time, verbose):
+def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_all, read_time, succinct):
     Print_text( "Function Check_Load_Files: assgined start iter:", start, " end iter:", end)
     save_file_list = glob.glob(filenames)
 
@@ -291,7 +291,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
                 save_end = int(file.split('_')[-2])                                                                           
                 save_list.append([save_start, save_end])
 
-        if verbose == "False": Print_text( "Available files have start/end iterations:", save_list)
+        if succinct == "False": Print_text( "Available files have start/end iterations:", save_list)
 
 
         max_idx = 0
@@ -305,7 +305,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             else:
                 Print_text("File", save_file_list[i], "not overlaps with assigned period [",start, end,"]") 
 
-        if verbose == "False": Print_text("Found best file, ", max_idx, save_list[max_idx], save_file_list[max_idx])
+        if succinct == "False": Print_text("Found best file, ", max_idx, save_list[max_idx], save_file_list[max_idx])
 
 
 
@@ -313,7 +313,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
         save_start = save_list[max_idx][0]
         save_end = save_list[max_idx][1]     
  
-        if verbose == "False": Print_text( "Function Check_Load_Files: saved start iter:", save_start, "saved end iter:", save_end)
+        if succinct == "False": Print_text( "Function Check_Load_Files: saved start iter:", save_start, "saved end iter:", save_end)
        
         if file_exist == 1:
             if end <= save_end:                                                                                      
@@ -343,10 +343,10 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             save_start = start            
 
     if output_all:
-        if verbose == "False": Print_subsubtitle("Output all is True!!!") 
+        if succinct == "False": Print_subsubtitle("Output all is True!!!") 
         return t, quant_data, file_exist, save_start, start
     else:
-        if verbose == "False": Print_subsubtitle("Output all is False!")
+        if succinct == "False": Print_subsubtitle("Output all is False!")
         return quant_data
 
 
@@ -362,10 +362,10 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
 # end: Ending iteration of the assigned period (needed to save the last iteration)
 # quant_data: Data to save to files
 # save_file_pre: Prefix of the saved filename
-# verbose: If we print verbose ('True') info or detailed ('False') info
+# succinct: If we print succinct ('True') info or detailed ('False') info
 ###############################################################################################################################
 
-def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pre, verbose):
+def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pre, succinct):
     name_body = "_"
     for item in [str(save_start), str(iter)]:
         if item != "None":
@@ -374,13 +374,13 @@ def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pr
  
     np.save(save_file_pre + name_body + "iter.npy", quant_data)  
     Print_subsubtitle("Function Save_Files:", save_file_pre + name_body + "iter.npy")
-    if verbose == "False":
+    if succinct == "False":
         Print_text("Now the file contains data with size:", np.shape(quant_data))
        
     if str(save_start) != "None" and str(iter) != "None":
         filename_pre = save_file_pre + "_" + str(save_start) + "_" + str(iter-save_step) + "_" + "iter.npy"
         if os.path.exists(filename_pre):
-            if verbose == "False": 
+            if succinct == "False": 
                 Print_subsubtitle("Deleting files", filename_pre)
             os.remove(filename_pre)
 
