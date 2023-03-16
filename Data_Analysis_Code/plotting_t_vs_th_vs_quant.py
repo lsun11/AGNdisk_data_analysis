@@ -20,11 +20,18 @@
 # Example command4: Output ONLY Time checkpoint files: 
 # python plotting_t_vs_th_vs_quant.py Wedge8_2 None None None 180 N 2000 3500 -1 True False
 
-# Example command5: make plots of temperature vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)
-# python plotting_t_vs_th_vs_quant.py Wedge8 Temp sigma None 120 Y 2000 3658 -1 True False 
+# Example command5: make plots of radiation temperature vs time vs theta at radius= 120 rg with photosphere using sigma (Rossland) / sigma_p (Planck)
+# python plotting_t_vs_th_vs_quant.py Wedge8 Temp_r sigma None 120 Y 2000 3658 -1 True False 
 
-# Example command6: make plots of BrBphi - rho_rrho_phi vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)                                            
+# Example command6: make plots of gas temperature vs time vs theta at radius= 120 rg with photosphere using sigma (Rossland) / sigma_p (Planck)
+# python plotting_t_vs_th_vs_quant.py Wedge8 Temp_g sigma None 120 Y 2000 3658 -1 True False 
+
+# Example command7: make plots of BrBphi - rho_rrho_phi vs time vs theta at radius= 120 rg with photosphere using sigma (Rossland)                                            
 # python plotting_t_vs_th_vs_quant.py Wedge8 Ang_rp sigma None 120 Y 2000 3658 -1 True False
+
+# Example command8: make plots of opacity kappa/kappa_p vs times vs theta at radius= 120 rg with photosphere using sigma (Rossland)                         
+# python plotting_t_vs_th_vs_quant.py Wedge8 kappa None None 120 Y 2000 3658 -1 True False
+# python plotting_t_vs_th_vs_quant.py Wedge8 kappa_p None None 120 Y 2000 3658 -1 True False 
 
 
 import numpy as np
@@ -104,16 +111,32 @@ th = Get_All_1D('theta', data, -1, dir, succinct)
 # Check and Load files                                                                                                          
 ########################################################################################################    
 quant_list = []
-comp_T = 0
+comp_Tr = 0
+comp_Tg = 0  
 comp_angmom_rp = 0
 comp_angmom_tp = 0
+comp_kappa = 0
 
-if quant1 == "Temp":
-    comp_T = 1
+if quant1 == "Temp_r":
+    comp_Tr = 1
     quant1 = "Er"
-elif quant2 == "Temp":                                                                                                     
-    comp_T = 1
+elif quant2 == "Temp_r":    
+    comp_Tr = 1
     quant2 = "Er"
+if quant1 == "Temp_g":                                                                                                                                  
+    if str(radius_select) not in pg_idx:
+        Print_subtitle("Wrong radius for pgas, exit!!!")
+        os.sys.exit(0)
+    else:
+        comp_Tg = 1                                                                                                                                         
+        quant1 = "rho"                                                                                                                                       
+        quant3 = "pg"
+if quant1 == "pg" and str(radius_select) not in pg_idx:
+    Print_subtitle("Wrong radius for pgas, exit!!!")                                                                                                
+    os.sys.exit(0) 
+if quant2 == "Temp_g" or quant3 == "Temp_g":
+    Print_subtitle("Please set Temp_g to quant1!!!!")                                                                                         
+    os.sys.exit(0)
 if quant1 == "Ang_rp":                                                                                            
     comp_angmom_rp = 1                                                                                                  
     quant1 = "rhovrvphi"                                                                                               
@@ -125,7 +148,14 @@ if quant1 == "Ang_tp":
 if quant2 == "Ang_rp" or quant2 == "Ang_tp":
     Print_subtitle("Please set Ang_rp or Ang_tp to quant1!!!!")
     os.sys.exit(0)
-
+if quant1 == "kappa":
+    comp_kappa = 1
+    quant1 = "rho"
+    quant2 = "sigma"
+if quant1 == "kappa_p":                                                                                                                                       
+    comp_kappa = 1                                                                                                                                          
+    quant1 = "rho"                                                                                                                                          
+    quant2 = "sigma_p"
 
 
 if quant1 != "None":
@@ -170,9 +200,11 @@ if plot_phot == "Y":
         quant3_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                         
         idx += 1
     if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
+    #print(idx, str(quant_list[idx]))
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
     iphot_upper_total = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
     idx += 1 
+    print(idx, str(quant_list[idx]))
     if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
     t, iphot_lower_total, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)) 
@@ -180,9 +212,10 @@ if plot_phot == "Y":
     if succinct == "False": 
         Print_subtitle("Data structure after loading saved files:")                                               
         Print_text("Time array:", np.shape(t)[0])                                                                 
+        Print_text("Quant_list:", quant_list)
         Print_text("Quantity and its data set:")
         Print_text(quant_list[0]+":", np.shape(quant1_data), quant_list[1]+":", np.shape(quant2_data))
-        Print_text(quant_list[2]+":", np.shape(iphot_upper_total), quant_list[3]+":", np.shape(iphot_lower_total))
+        #Print_text(quant_list[2]+":", np.shape(iphot_upper_total), quant_list[3]+":", np.shape(iphot_lower_total))
         Print_text("Starting iteration existed in the saved data:", save_start)                                   
         Print_text("(!) Starting iteration for new computation:", start)                                          
         Print_text("(!) Expected to read and plot data until iteration:", end) 
@@ -254,18 +287,30 @@ for iter in range(start, end):
             radius_idx = shift_rad.index(min(shift_rad))        
             if file_exist == 0:
                 if quant1 != "None":
-                    quant1_data.append( [q[radius_idx] for q in data[quant1]])
+                    if quant1 == "pg":
+                        quant1_data.append( data[quant1][pg_idx[str(radius_select)]])
+                    else:                                                                                            
+                        quant1_data.append( [q[radius_idx] for q in data[quant1]])
                 if quant2 != "None":
                     quant2_data.append( [q[radius_idx] for q in data[quant2]])
                 if quant3 != "None":                                                                                                                                 
-                    quant3_data.append( [q[radius_idx] for q in data[quant3]])
+                    if quant3 == "pg":
+                        quant3_data.append( data[quant3][pg_idx[str(radius_select)]]) 
+                    else:
+                        quant3_data.append( [q[radius_idx] for q in data[quant3]])
             else:
                 if quant1 != "None":
-                    quant1_data = np.vstack( [quant1_data, [q[radius_idx] for q in data[quant1]] ] )
+                    if quant1 == "pg":                                         
+                        quant1_data = np.vstack( [quant1_data, [data[quant1][pg_idx[str(radius_select)]]] ] )  
+                    else:                                                                                                                           
+                        quant1_data = np.vstack( [quant1_data, [q[radius_idx] for q in data[quant1]] ] ) 
                 if quant2 != "None":  
                     quant2_data = np.vstack( [quant2_data, [q[radius_idx] for q in data[quant2]] ] )
                 if quant3 != "None":                                                                                                                                 
-                    quant3_data = np.vstack( [quant3_data, [q[radius_idx] for q in data[quant3]] ] )
+                    if quant3 == "pg":
+                        quant3_data = np.vstack( [quant3_data, [data[quant3][pg_idx[str(radius_select)]]] ] ) 
+                    else:
+                        quant3_data = np.vstack( [quant3_data, [q[radius_idx] for q in data[quant3]] ] )
             if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":", np.shape(quant2_data), quant3+":", np.shape(quant3_data))
 
             if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!
@@ -341,21 +386,26 @@ for iter in range(start, end):
                 Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
 
 if succinct == "False": Print_subtitle("Done reading data!")                                                                                
-if succinct == "False": Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data))
+if succinct == "False": Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data), np.shape(quant3_data))
 
 
 
 ########################################################################################################
 # Convert Er to Temperature using Er = aT^4  
 ########################################################################################################
-if comp_T == 1:
-    if succinct == "False": Print_subtitle("Computing Temperature!!!")
+if comp_Tr == 1:
+    if succinct == "False": Print_subtitle("Computing Radiation Temperature!!!")
     if quant1 == 'Er':
         quant1_data = [[qq**(0.25) for qq in q] for q in quant1_data]
     elif quant2 == 'Er':                                                                                                   
         quant2_data = [[qq**(0.25) for qq in q] for q in quant2_data] 
-    quant1 = "Temp"
+    quant1 = "Temp_r"
 
+if comp_Tg == 1:                                                                                                                                        
+    if succinct == "False": Print_subtitle("Computing Gas Temperature!!!") 
+    quant1_data = [[qq3/qq1 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)]    
+    quant1 = "Temp_g" 
+    
 if comp_angmom_rp == 1:
    if succinct == "False": Print_subtitle("Computing rhovrvphi - BrBp!!!") 
    print(np.shape(quant1_data), np.shape(quant3_data))
@@ -366,12 +416,20 @@ if comp_angmom_tp == 1:
    quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)] 
    quant1 = "Ang_tp" 
 
-print(np.shape(quant1))
+if comp_kappa == 1:
+   if succinct == "False": Print_subtitle("Computing Opacity")
+   # Note: the quantity in the line below: sigma(code)/rho(code) is just kappa/kappa_es! No additional factor needed!
+   quant1_data = [[qq2/qq1 for qq1,qq2 in zip(q1, q2)] for q1, q2 in zip(quant1_data, quant2_data)] 
+   #quant1_data = [[qq2/kappaes_code for qq2 in q2] for q2 in quant2_data] 
 
 Print_title(sp30, "Start Plotting!!!!", sp30)                                                                     
 ########################################################################################################          
 # Plotting and save              
 ########################################################################################################  
+v_max = None
+v_min = None
+
+
 if str(str(quant1)[0:2]) == "PB":
     color = 'RdGy_r'
     pre_str = 'P_B'
@@ -385,11 +443,32 @@ elif str(str(quant1)[0:2]) == "pg":
     fac = 2.77e5                                                                                                 
     logscale = True 
 elif str(str(quant1)[0:3]) == "rho":  # no _2                                                                    
-    color = 'BrBG_r'                                                                                             
-    pre_str = 'log_{10}(\\rho/\\rho_0)'
-    cbar_str = r'$log_{10}(\rho/\rho_0)$'                                                                                   
-    fac  = 1.0/dens_to_cgs                                                                                               
-    logscale = True                                                                                              
+    if (str(quant2)[0:5]) == "sigma":             
+        color = 'bone' 
+        if (str(quant2)[-1]) == "p":
+            #pre_str = '\\kappa_{P}/\\kappa_{es}'
+            #cbar_str = r'$\kappa_{Planck}/\kappa_{es}$'
+            pre_str = '\\kappa_{Plank}'
+            cbar_str = r'$\kappa_{Planck}$'
+            quant1 = "kappa_p"
+        else:
+            #pre_str = '\\kappa_{R}/\\kappa_{es}' 
+            #cbar_str = r'$\kappa_{Rossland}/\kappa_{es}$' 
+            pre_str = '\\kappa_{Rossland}'                                                                                                                                                                             
+            cbar_str = r'$\kappa_{Rossland}$'
+            quant1 = "kappa"
+        fac  = 1.0/(dens_to_cgs*r_to_cgs)
+        #v_max = 3.0
+        #v_min = 0.0
+        #fac = 1.0
+        logscale = False
+    else:
+        color = 'BrBG_r'                                                                                             
+        pre_str = 'log_{10}(\\rho/\\rho_0)'
+        cbar_str = r'$log_{10}(\rho/\rho_0)$'                                                                                   
+        #fac  = 1.0/dens_to_cgs                                                                                               
+        fac  = 1.0          # code unit rho is just rho_cgs/rho_0
+        logscale = True                                                                                              
     phot_color = 'yellow'
 elif str(str(quant1)[0:2]) == "Er":   # no _2                                                                    
     color = 'PRGn_r'                                                                                             
@@ -415,33 +494,37 @@ elif str(str(quant1)[0:2]) == "B3":
     cbar_str = r'$B_{\phi}$'                                                                                      
     fac = 2.64e3                                                                                                 
     logscale = False                                                                                             
-elif str(str(quant1)[0:5]) == "kappa": # no _2                                                                   
-    color = 'seismic'  
-    pre_str = '\\kappa'                                                                                          
-    cbar_str = r'$\kappa$'                                                                                        
-    fac = 8.05e3/5/3                                                                                             
-    logscale = False
-elif str(str(quant1)[0:4]) == "Temp": # no _2          
-    color = 'Spectral'                                                                                                    
-    pre_str = 'T (K)'                                                                                                  
-    cbar_str = r'$\log_{10}(T) (K)$'                                                                                               
+elif str(str(quant1)[0:6]) == "Temp_r": # no _2          
+    color = 'Spectral'                                    
+    pre_str = 'T_{rad} (K)'                                                                                                  
+    cbar_str = r'$\log_{10}(T_{rad}) (K)$'                                                                                               
     fac = (P_to_cgs/rad_const)**0.25
     logscale = True
     phot_color = 'black'
+elif str(str(quant1)[0:6]) == "Temp_g": # no _2                                                                                                         
+    color = 'pink'                                                                                                                                  
+    pre_str = 'T_{gas} (K)'                                                                                                                                   
+    cbar_str = r'$\log_{10}(T_{gas}) (K)$'                                                                                                                    
+    fac = 1.0e5
+    logscale = True                                                                                                                                     
+    phot_color = 'black' 
+    v_max = 6.0
+    v_min = 2.0
 elif str(str(quant1)[0:6]) == "Ang_rp":
     color = 'winter'
-    pre_str = 'B_rB_{\\phi} - \\rho_r\\rho_{\\phi}'
-    cbar_str = r'$B_rB_{\phi} - \rho_r\rho_{\phi}$'
+    pre_str = 'log_{10}(\\rho_r\\rho_{\\phi} - B_rB_{\\phi})'
+    cbar_str = r'$\log_{10}(\rho_r\rho_{\phi} - B_rB_{\phi})$'
     fac = P_to_cgs
-    logscale = False                                                                                             
+    logscale = True 
     phot_color = 'white' 
-elif str(str(quant1)[0:6]) == "Ang_rt":
-    color = 'winter'                                                                                            
-    pre_str = 'B_{\\theta}B_{\\phi} - \\rho_{\\theta}\\rho_{\\phi}'                                                             
-    cbar_str = r'$B_{\theta}B_{\phi} - \rho_{\theta}\rho_{\phi}$'                                                             
-    fac = Pressure_to_cgs                                                                                       
-    logscale = False                                                                                            
+elif str(str(quant1)[0:6]) == "Ang_tp":
+    color = 'cool'                                                                                            
+    pre_str = 'log_{10}(\\rho_{\\theta}\\rho_{\\phi} - B_{\\theta}B_{\\phi})'   
+    cbar_str = r'$\log_{10}(\rho_{\theta}\rho_{\phi} - B_{\theta}B_{\phi})$'                                                             
+    fac = P_to_cgs                                                                                       
+    logscale = True                                                                                            
     phot_color = 'white'
+print (str(quant1))
 
 
 Theta, Time = np.meshgrid(th,t)
@@ -463,10 +546,11 @@ xlabel = r'$t (s)$'
 ylabel = r'$\theta(^o)$'
 
 
-################## Logscale of q has been taken care of, set log_q to False here ###################################################################
-ax1 = Plotting_Mesh_YX(t, th, quant1_data, time_to_sec, rad_to_deg, fac, False, False, logscale, color, None, None, None, None, title, xlabel, ylabel, cbar_str, font)
 
-savename = save_path + str(quant1) + 'vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(save_start) + '_' +str(end) + '_' + 'plot.png' 
+################## Logscale of q has been taken care of, set log_q to False here ###################################################################
+ax1 = Plotting_Mesh_YX(t, th, np.abs(quant1_data), time_to_sec, rad_to_deg, fac, False, False, logscale, color, None, None, v_max, v_min, title, xlabel, ylabel, cbar_str, font)
+
+savename = save_path + str(quant1) + '_vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(save_start) + '_' +str(end) + '_' + 'plot.png' 
 ################## Plot the photosphere curve ######################################################################################################
 if plot_phot == "Y":
     phot_th_upper = [th[it]*rad_to_deg for it in iphot_upper_total]                                                                                                                                                                  

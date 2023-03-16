@@ -10,6 +10,7 @@ dens_to_cgs = 5.0e-10
 kappa_to_cgs = 1.0/(1.4842e13*5.0e-10)
 P_to_cgs = dens_to_cgs * v_to_cgs**2
 Mdot_to_cgs = dens_to_cgs * r_to_cgs**2 * v_to_cgs  
+temp_to_cgs = 1.0e5
 #kappa_to_cgs = dens_to_cgs * r_to_cgs
 # The kappa vaue below is probably not right. I guess it using AGNIron's data
 # 5.0655e5*(1.4842e13*5e-10)/(1e-8*2*7.42e13), where 5.0655e5 is AGNIron's kappa_to_cgs
@@ -38,3 +39,7 @@ font2 = {'family': 'sans-serif',
         'weight': 'normal',                                                                                           
         'size': 14,                                                                                                   
         }
+
+# index of data pg based on radius
+# should really make pg 2D and get rid of this...
+pg_idx = {'120': 0, '140': 1, '160': 2, '180': 3}
