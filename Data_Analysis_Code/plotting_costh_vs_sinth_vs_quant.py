@@ -1,4 +1,9 @@
+######################################################################################################
 #THIS SCRIPT PLOTS R*SIN(THETA)(X), R*COS(THETA)(Y), VS QUANTITY, AT A GIVEN TIME
+# Arguments: 1. Case  2. quantity1  3. quantity2
+# 4. select iteration(time) to make the plot  5. plot_photoshphere?
+# 6. Photosphere mode  7. succinct output?
+######################################################################################################
 # Example command python plotting_costh_vs_sinth_vs_quant.py Wedge8_2 rho sigma_p 2000 Y -1 False
 
 
@@ -66,7 +71,7 @@ Print_subtitle("Getting Radius and Theta arrays, using file:", filename)
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
 r = Get_All_1D('radius', data, -1, dir, succinct)  
-th = Get_All_1D('theta', data, -1, dir, succincts)                                                           
+th = Get_All_1D('theta', data, -1, dir, succinct)     
 
         
 ########################################################################################################

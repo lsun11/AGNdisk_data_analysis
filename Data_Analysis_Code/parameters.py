@@ -22,7 +22,7 @@ M_BH = 1.0e8
 Mdot_Edd_cgs = 1.4e18*M_BH                         # in g/s
 
 # Dictories to save plots and checkpoints 
-Data_dir             = '/home/lunan/mnt/AGNWedge8_product/'
+Data_dir             = '/home/lunan/mnt/AGNWedge8_product2/'
 Plot_dir             = Data_dir + 'PLOTS/'
 Checkpoint_dir       = Data_dir + 'Checkpoint/'
 
