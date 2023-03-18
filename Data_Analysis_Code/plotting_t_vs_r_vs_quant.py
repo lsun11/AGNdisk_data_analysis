@@ -1,4 +1,10 @@
-#THIS SCRIPT PLOTS TIME(X), RADIUS(Y), VS QUANTUTY, AT A GIVEN RADIUS
+####################################################################################################
+# THIS SCRIPT PLOTS TIME(X), RADIUS(Y), VS QUANTUTY, AT A GIVEN THETA
+####################################################################################################
+# Arguments:
+# 1. Case  2. quantity1  3. quantity2  4. selected theta  
+# 5. start iteration  6. end iteration  7. succinct output? 
+#######################################################################################################
 # Example1 command python plotting_t_vs_r_vs_quant.py Wedge8_2 surface_density None 90.0 3000 3500 False
 # Example2 command python plotting_t_vs_r_vs_quant.py Wedge8_2 kappa rho 90.0 3000 3500 False
 

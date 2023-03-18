@@ -24,7 +24,7 @@ import sys
 import matplotlib.pyplot as plt                                                                                    
 #import glob                                                                                                       
 from sys import argv                                                                                               
-myfonts = "Times New Roman"                                                                                        
+myfonts = "Times New Roman"  
 plt.rcParams['font.family'] = "sans-serif"                                                                         
 plt.rcParams['font.sans-serif'] = myfonts                                                                          
                                                                                                                    
@@ -110,7 +110,7 @@ Mdot_flag = 0
 for idx, item in enumerate(quant_list):
     if item == "PB_total":
         PB_total_flag = 1
-        if '_2' in str(case):
+        if '_2' not in str(case):
             quant_list[idx:idx] = ['PB1', 'PB2', 'PB3']
         else:
             quant_list[idx:idx] = ['ST_PB1', 'ST_PB2', 'ST_PB3']
@@ -158,6 +158,7 @@ Print_title(sp20*5)
 ########################################################################################################
 Print_subtitle("Start Reading New Data to Arrays!!!")
 radius = {'1': 120, '2':140, '3':160, '4':180}  
+radius_pg = {'120':0, '140':1,'160':2,'180':3}
 for iter in range(start, end):                                                                                   
     filename = "hist_"+str(iter).zfill(5)+".npz"
     if os.path.exists(dir+'/'+filename):
@@ -175,15 +176,21 @@ for iter in range(start, end):
                     else:
                         quant_data[idx] = np.vstack([quant_data[idx], list(data[quant])])
                 else:                                 #  2D
-                    shift_rad = [np.abs(rad - float(radius_select)) for rad in r]  
-                    radius_idx = shift_rad.index(min(shift_rad))
+                    if str(quant) != 'pg':
+                        shift_rad = [np.abs(rad - float(radius_select)) for rad in r]  
+                        radius_idx = shift_rad.index(min(shift_rad))
+                        if file_exist == 0:                                                                                    
+                            quant_data[idx].append(list([q[radius_idx] for q in data[quant]]))                                 
+                        else:                                                                                                  
+                            quant_data[idx] = np.vstack([quant_data[idx], list([q[radius_idx] for q in data[quant]])])
+                    else:  #pg
+                        radius_idx = radius_pg[str(radius_select)]
+                        if file_exist == 0:
+                            quant_data[idx].append(data[quant][radius_idx]) 
+                        else:
+                            quant_data[idx] = np.vstack([quant_data[idx], [data[quant][radius_idx]] ])
 
-                    if file_exist == 0:
-                        quant_data[idx].append(list([q[radius_idx] for q in data[quant]])) 
-                    else:
-                        quant_data[idx] = np.vstack([quant_data[idx], list([q[radius_idx] for q in data[quant]])])
 
-                    #string_radius = str(int(radius_select))
 
         # Get time after Mdot data in case saved time files exists
         if file_exist == 1:  
@@ -236,7 +243,7 @@ if rhovt2_flag == 1:
 ######################################################################################################## 
 if PB_total_flag == 1:
     Print_subtitle("Compute PB_total!!!")
-    if "_2" in str(case):
+    if "_2" not in str(case):
        data_PB1 = quant_data[quant_list.index('PB1')]                                                                            
        data_PB2 = quant_data[quant_list.index('PB2')]                                                                                   
        data_PB3 = quant_data[quant_list.index('PB3')]
@@ -287,7 +294,6 @@ for _ in range(len(quant_list)):
     ave_quant_data.append([]) 
 
 for idx, lists in enumerate(quant_data):
-    print(idx, lists, Mdot_flag)
     if len(lists) > 0:
         ave_quant_data[idx] = list(np.mean(lists, axis = plot_axis) )
     if rhovt2_flag == 1:                                                                                              

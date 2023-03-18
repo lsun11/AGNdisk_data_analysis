@@ -5,8 +5,9 @@ import os
 import glob
 import matplotlib.pyplot as plt
 import sys
-
+import shutil
 from parameters import *
+from colorama import Fore,Style
 
 sp1 = " "
 sp2 = "  "
@@ -17,6 +18,8 @@ sp30 = sp3*10
 def print_e(*arg):
     print(*arg,end="")
 
+terminal_width, _ = shutil.get_terminal_size()
+
 ########################################################################################################                                                                                                            
 # Fucntion: Print_title  -- print noticing texts (title)
 ########################################################################################################                                                                                                            
@@ -25,11 +28,13 @@ def print_e(*arg):
 # quant: *arg (whatever the print function passes)
 ########################################################################################################   
 def Print_title(*arg):
+    sp_half = sp1 * int((terminal_width - len(str(arg)))//2)
     print("\n")  
-    boarder = "#" * (len(str(arg[:]))+60)
-    print(boarder)
-    print(sp30, *arg, sp30)
-    print(boarder)
+    boarder = "#" * terminal_width
+    print(Fore.CYAN + boarder)
+    print(Fore.CYAN + sp_half, *arg, sp_half)
+    print(Fore.CYAN + boarder)
+    print(Style.RESET_ALL)
     #print("\n")  
 
 
@@ -43,10 +48,10 @@ def Print_title(*arg):
 def Print_subtitle(*arg):                                                                                                                                                                                              
     print("\n")
     boarder = sp2 + "=" * len(str(arg[:]))      
-    print(boarder)                                                                                                                                                                                                  
-    print(sp3 + "o", *arg)                                                                                                                                                                                                
-    print(boarder)                                                                                                                                                                                                  
-    #print("\n") 
+    print(Fore.MAGENTA + boarder)                                                                                                                                                                                                  
+    print(Fore.MAGENTA + sp3 + "o", *arg)                                                                                                                                                                                                
+    print(Fore.MAGENTA + boarder)                                                                                                                                                                                                  
+    print(Style.RESET_ALL)
 
 
 def Print_subtitle_e(*arg):                                                                                                
@@ -373,8 +378,8 @@ def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pr
             name_body += "_"
  
     np.save(save_file_pre + name_body + "iter.npy", quant_data)  
-    Print_subsubtitle("Function Save_Files:", save_file_pre + name_body + "iter.npy")
-    if succinct == "False":
+    if succinct == "False": 
+        Print_subsubtitle("Function Save_Files:", save_file_pre + name_body + "iter.npy")
         Print_text("Now the file contains data with size:", np.shape(quant_data))
        
     if str(save_start) != "None" and str(iter) != "None":
