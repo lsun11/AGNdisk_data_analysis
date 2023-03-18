@@ -143,7 +143,18 @@ for case in ${cases[@]} ; do
        python $code_path"plotting_t_vs_r_vs_quant.py" $case $plot_t_r_q1 $plot_t_r_q2 $plot_t_r_theta $start $end $plot_t_r_succ
     fi
 
-    
+    if [[ $plot_T_var =~ ^[Yy]$ ]];                                                                                                                                                                             
+    then                                                                                                                                                                                                            
+       tput setaf 31                                                                                                                                                                                                
+       echo $thin_b      
+       echo "$(printf '%*s' $(($center_position-15)) ) Plotting temperature variation plots at given locations      "
+       echo $thin_b
+       tput setaf 0 
+       python $code_path"plotting_T_var.py" $case $plot_T_var_q1 $start $end $plot_T_var_deg $plot_T_var_q2 $plot_T_var_q3 $plot_T_var_ph_mode $plot_T_var_succ
+    fi
+
+
+    ########## radius dependent plots below #############
 
     for radius in ${radii[@]}; do	
         tput setaf 24

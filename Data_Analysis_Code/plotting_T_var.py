@@ -2,20 +2,22 @@
 #Location can be chosen at: midplane, theta = 80deg, theta = 70deg, and photosphere
 #Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa -1 False
 
-print("========================== Starting plotting_T_var.py =============================")
-import numpy as np                                                                                                                                                                                                                
-import os                                                                                                                                                                                                                         
-import sys                                                                                                                                                                                                                        
-import matplotlib.pyplot as plt                                                                                                                                                                                                   
-#import glob
-from sys import argv                                                                                                                                                                                                              
-myfonts = "Times New Roman"                                                                                                                                                                                                       
-plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                                        
-plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                                         
+import numpy as np                                                                                                                                                                                                  
+import os                                                                                                                                                                                                           
+import sys                                                                                                                                                                                                          
+import matplotlib.pyplot as plt                                                                                                                                                                                     
+#import glob                                                                                                                                                                                                        
+from sys import argv                                                                                                                                                                                                
+myfonts = "Times New Roman"                                                                                                                                                                                         
+plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                          
+plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                           
+from tqdm import tqdm                                                                                                                                                                                               
 
-from parameters import *                                                                                                                                                                                                                           
-from util import *
-                                                                                                                                                                                                                 
+from parameters import *                                                                                                                                                                                            
+from util import *     
+
+Print_title("========================== Starting plotting_T_var.py =============================")
+
 
 ########################################################################################################                 
 # input arguments                                                                                                        
@@ -78,7 +80,7 @@ elif deg == "70":
 # Any hist file can be used to generate these:
 ########################################################################################################  
 filename = "hist_"+str(start).zfill(5)+".npz"
-print(filename)                                                                                                      
+Print_text(filename)                                                                                                      
 data = np.load(dir+'/'+filename)                         
 
 r = Get_All_1D('radius', data, 1100, dir, succinct)   
@@ -89,10 +91,10 @@ if deg == 'photosphere':
 
 
 if str(case)[-2:] == '_2':                                                                                                                                                                                                        
-    print('case: _2')                                                                                                                                                                                                             
+    Print_text('case: _2')                                                                                                                                                                                                             
     idx = {"surface_density":6, 'rho':7, 'Er':8, 'kappa':9, 'Fr1':10, 'Fr2':11, 'B1_r1':12, 'B1_r2':13, 'B1_r3':14, 'B1_r4':15, 'B2_r1':16, 'B2_r2':17, 'B2_r3':18, 'B2_r4':19, 'B3_r1':20, 'B3_r2':21, 'B3_r3':22, 'B3_r4':23, 'PB_r2':25, 'PB_r3':26, 'PB_r4':27, 'pg_r1':28, 'pg_r2':29, 'pg_r3':30, 'pg_r4':31, 'rhovr':32, 'lambda_r1':33, 'lambda_r2':34, 'lambda_r3':35, 'lambda_r4':36}
 else:                                                                                                                                                                                                       
-    print('case: no _2')                                                                                                                                                                                                          
+    Print_text('case: no _2')                                                                                                                                                                                                          
     idx = {"surface_density":6, 'rho1':7, 'rho2':8, 'rho3':9, 'rho4':10, 'Er1':11, 'Er2':12, 'Er3':13, 'Er4':14, 'kappa1':15, 'kappa2':16, 'kappa3':17, 'kappa4':18} 
 
 
@@ -123,9 +125,13 @@ print(np.shape(t), np.shape(quant_data), file_exist)
 ########################################################################################################
 # Iterate from start to end to compute and save time and quant
 ######################################################################################################## 
+pbar = tqdm(total=len(r))
 for iter in range(start, end):                                                                                                                                                                                                
         filename = "hist_"+str(iter).zfill(5)+".npz"                                                                                                                                                                              
-        print(filename)     
+        if succinct == "True": 
+            pbar.update(n=1)
+        else:
+            Print_subtitle(filename)     
         data = np.load(dir+'/'+filename)      
 
         if file_exist == 1:
@@ -136,18 +142,17 @@ for iter in range(start, end):
 
 
         if deg != "photosphere":
-            print("We are plotting quantities at "+str(deg)+"!!!") 
+            if succinct == "False": Print_text("We are plotting quantities at "+str(deg)+"!!!") 
             quant_data.append(data[quant][deg_idx][0:1100]) #midplane
 
         else:   #integrate rho*kappa to get photosphere
-            print("We are plotting quantities at the photosphere!!!")
+            if succinct == "False": Print_text("We are plotting quantities at the photosphere!!!")
 
             r_data    = r[0:1100]                               # 0:1100 --> we only plot radius < 500 rg             
             kappa_zip = list(zip(*data[quant3]))
             kappa_data = kappa_zip[0:1100]      
             th_data   = th        
-          
-            print (len(kappa_data), len(kappa_data[0]))
+                      
             # initialize an array for the indices of photosphere theta
             iphot = []
             hemi = 'upper'

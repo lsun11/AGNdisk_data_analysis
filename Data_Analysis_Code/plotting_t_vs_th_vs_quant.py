@@ -267,7 +267,7 @@ Print_title(sp20*5)
 # Computing the new time and quantities arrays:                                                                         
 ########################################################################################################
 Print_subtitle("Start Reading New Data to Arrays!!! Total files to read: ", end-start+1) 
-pbar = tqdm(total=end-start+1)
+pbar = tqdm(total=end-start)
 for iter in range(start, end):
     filename = "hist_"+str(iter).zfill(5)+".npz"
     if os.path.exists(dir+'/'+filename):

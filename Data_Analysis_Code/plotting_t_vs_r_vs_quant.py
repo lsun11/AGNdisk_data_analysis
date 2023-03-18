@@ -8,18 +8,20 @@
 # Example1 command python plotting_t_vs_r_vs_quant.py Wedge8_2 surface_density None 90.0 3000 3500 False
 # Example2 command python plotting_t_vs_r_vs_quant.py Wedge8_2 kappa rho 90.0 3000 3500 False
 
-print("========================== Starting plotting_t_vs_r_vs_quant.py =============================")
-import numpy as np
-import os
-import matplotlib.pyplot as plt
-import sys
-from sys import argv
-myfonts = "Times New Roman"                                                                                                                                                                                                            
-plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                                             
-plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                                              
-                                                                                                                                                                                                                                       
-from parameters import *                                                                                            
-from util import *
+import numpy as np                                                                                                                                                                                                  
+import os                                                                                                                                                                                                           
+import matplotlib.pyplot as plt                                                                                                                                                                                     
+import sys                                                                                                                                                                                                          
+from sys import argv                                                                                                                                                                                                
+myfonts = "Times New Roman"                                                                                                                                                                                         
+plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                          
+plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                           
+from tqdm import tqdm                                                                                                                                                                                                                     
+
+from parameters import *                                                                                                                                                                                            
+from util import * 
+
+Print_title("========================== Starting plotting_t_vs_r_vs_quant.py =============================")
                                                                                                                                                                                                                                        
 font = {'family': 'sans-serif',                                                                                                                                                                                                        
         'color':  'black',                                                                                                                                                                                                             
@@ -52,19 +54,19 @@ succinct = argv[7]
 #  set paths based on cases                                                                                         
 ########################################################################################################
 if str(case).find('Wedge8') == 0:                                                                                     
-    print('case: Wedge8')                                                                                         
+    Print_subtitle('We are analyzing the case: Wedge8')
     checkpoint_path = Checkpoint_dir  + 'Wedge8/'                                                                     
     save_path = Plot_dir + 'Wedge8/'                                                                              
 elif str(case).find('Wedge9B') == 0:                                                                                  
-    print('case: Wedge9B')                                                                                        
+    Print_subtitle('We are analyzing the case: Wedge9B')
     checkpoint_path = Checkpoint_dir  + 'Wedge9B/'                                                                    
     save_path = Plot_dir + 'Wedge9B/'                                                                             
 elif str(case).find('Wedge9Res') == 0:                                                                                
-    print('case: Wedge9Res')                                                                                      
+    Print_subtitle('We are analyzing the case: Wedge9Res')
     checkpoint_path = Checkpoint_dir  + 'Wedge9Res/'                                                                  
     save_path = Plot_dir + 'Wedge9Res/'                                                                           
 elif str(case).find('Wedge10') == 0:                                                                                  
-    print('case: Wedge10')                                                                                        
+    Print_subtitle('We are analyzing the case: Wedge10')
     checkpoint_path = Checkpoint_dir  + 'Wedge10/'                                                                    
     save_path = Plot_dir + 'Wedge10/' 
 dir = Data_dir + 'DATA'+str(case)
@@ -76,7 +78,7 @@ dir = Data_dir + 'DATA'+str(case)
 # Any hist file can be used to generate these:                                                                      
 ########################################################################################################            
 filename = "hist_"+str(start).zfill(5)+".npz"                                                                       
-print(filename)                                                                                                     
+if succinct == "False": Print_subtitle("Getting Radius and Theta arrays, using file:", filename) 
 data = np.load(dir+'/'+filename)                                                                                    
                                                                                                                     
 r = Get_All_1D('radius', data, -1, dir, succinct) 
@@ -100,12 +102,15 @@ else:
 quant1_data = []
 quant2_data = []
 
+pbar = tqdm(total=end-start)
 for iter in range(start, end):
     filename = "hist_"+str(iter).zfill(5)+".npz"
-    print(filename)
     data = np.load(dir+'/'+filename)  
+    if succinct == "False":                                                                                                                                                                                     
+        Print_subtitle("Reading file:", filename)                                                                                                                                                               
+    else:                                                                                                                                                                                                       
+        pbar.update(n=1)
     t.append(Get_Time(data, dir)) 
-
     if len(np.shape(data[quant1])) == 1:     # 1D data (integrated for all theta)
         quant1_data.append( data[quant1] )
     else:                                  # 2D data

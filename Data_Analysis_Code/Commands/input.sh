@@ -59,10 +59,22 @@ plot_1D_th_ave_succ=True
 ### Make quantity vs time vs radius plots at a given theta
 plot_t_r_quant=Y
 
-plot_t_r_q1=surface_density
+plot_t_r_q1=sigma_p
 plot_t_r_q2=None
 plot_t_r_theta=90.0
-plot_t_r_succ=False
+plot_t_r_succ=True
+
+
+### Make temperature variation plots at given locations
+plot_T_var=Y
+
+plot_T_var_deg=photosphere
+plot_T_var_q1=Er
+plot_T_var_deg=photosphere
+plot_T_var_q2=rho
+plot_T_var_q3=sigma
+plot_T_var_ph_mode=-1
+plot_T_var_succ=True
 
 ########################### Stuff to modify when initialzie the code #########################
 
