@@ -28,12 +28,12 @@ terminal_width, _ = shutil.get_terminal_size()
 # quant: *arg (whatever the print function passes)
 ########################################################################################################   
 def Print_title(*arg):
-    sp_half = sp1 * int((terminal_width - len(str(arg)))//2)
+    sp_half = sp1 * int((terminal_width - len(str(arg)))/2+2)
     print("\n")  
     boarder = "#" * terminal_width
-    print(Fore.CYAN + boarder)
-    print(Fore.CYAN + sp_half, *arg, sp_half)
-    print(Fore.CYAN + boarder)
+    print('\033[90;107;1m' + boarder)
+    print('\033[36;107;22m' + sp_half, *arg, sp_half)
+    print('\033[90;107;1m' + boarder)
     print(Style.RESET_ALL)
     #print("\n")  
 
@@ -48,9 +48,9 @@ def Print_title(*arg):
 def Print_subtitle(*arg):                                                                                                                                                                                              
     print("\n")
     boarder = sp2 + "=" * len(str(arg[:]))      
-    print(Fore.MAGENTA + boarder)                                                                                                                                                                                                  
-    print(Fore.MAGENTA + sp3 + "o", *arg)                                                                                                                                                                                                
-    print(Fore.MAGENTA + boarder)                                                                                                                                                                                                  
+    print('\033[36;22m' + boarder)      
+    print('\033[36;22m' + sp3 + "o", *arg)                                                                                                                                                                                                
+    print('\033[36;22m' + boarder)                                                                                                                                                                                                  
     print(Style.RESET_ALL)
 
 
@@ -74,7 +74,7 @@ def Print_subsubtitle(*arg):
     print(boarder)   
     print(sp3 + "-", *arg)
     print(boarder)
-    #print("\n")                                                                                                                                                                                                    
+    print(Style.RESET_ALL)  
 
 
 ########################################################################################################                                                                                                            
@@ -85,7 +85,7 @@ def Print_subsubtitle(*arg):
 # quant: *arg (whatever the print function passes)                                                                                                                                                                  
 ########################################################################################################                                                                                                            
 def Print_text(*arg):
-    print(sp3 + sp2 + "--", *arg) 
+    print('\033[90;22m' + sp3 + sp2 + "--", *arg) 
 
 
 
@@ -153,7 +153,6 @@ def Get_Time(data, dir):
     else:
         result.append(t_data)
     return result[0]
-
 
 
 
@@ -283,8 +282,8 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
     save_file_list = glob.glob(filenames)
 
     if len(save_file_list) == 0:
-        Print_subsubtitle("No previously saved files, start new arrays")                                                                                                                                            
-        t = []                                                                                                                                                                                                      
+        Print_subtitle("No previously saved files, start new arrays")                                                                                                                                            
+        t          = []                                                                                                                                                                                                      
         quant_data = []                                                                                                                                                                                             
         save_start = start      
 
@@ -293,16 +292,14 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
         if len(save_file_list) > 0:                                                                                          
             for file in save_file_list:                  
                 save_start = int(file.split('_')[-3])                                                                         
-                save_end = int(file.split('_')[-2])                                                                           
+                save_end   = int(file.split('_')[-2])                                                                           
                 save_list.append([save_start, save_end])
-
         if succinct == "False": Print_text( "Available files have start/end iterations:", save_list)
-
 
         max_idx = 0
         max_end = start
         for i in range(0, len(save_list)):            
-            if save_list[i][0] >= save_start and save_list[i][0] <= save_end:                 
+            if start >= save_list[i][0] and start <= save_list[i][1]:   
                 file_exist = 1
                 if save_list[i][1] >= max_end:
                     max_idx = i
@@ -310,42 +307,36 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             else:
                 Print_text("File", save_file_list[i], "not overlaps with assigned period [",start, end,"]") 
 
-        if succinct == "False": Print_text("Found best file, ", max_idx, save_list[max_idx], save_file_list[max_idx])
-
-
-
-        file = save_file_list[max_idx]
-        save_start = save_list[max_idx][0]
-        save_end = save_list[max_idx][1]     
- 
-        if succinct == "False": Print_text( "Function Check_Load_Files: saved start iter:", save_start, "saved end iter:", save_end)
-       
         if file_exist == 1:
-            if end <= save_end:                                                                                      
-                Print_subsubtitle("The entire range",start, end, "is included in the file:", file)                                             
-            else:                                                                                                    
-                Print_text("Need to load and read new data. The file we load is:", file)                                                                   
+            Print_subtitle("Found best file: ", save_file_list[max_idx])
+            file       = save_file_list[max_idx]
+            save_start = save_list[max_idx][0] 
+            save_end   = save_list[max_idx][1]
+  
+            Print_subsubtitle("Use the dataset that covers iteration:", save_start, " to:", save_end)                                    
+            if end <= save_end:
+               Print_subtitle("The entire range (",start, "to", end, ") is included in the file:", file)
+            else:                                                                                                                                        
+               Print_subsubtitle("Need to load and read new data. The file we load is:", file)
+            
+            quant_data = np.load(file)                                                                                                   
+            Print_text("Structure of the readin file:", np.shape(quant_data)) 
 
-            quant_data = np.load(file)                                                                               
-            Print_text("Structure of the readin file:", np.shape(quant_data))
-
-            if output_all:
+            if output_all:                                                                                                               
                 if read_time == "True":
-                    t_file = t_filenames_pre + str(save_start)+"_"+str(save_end)+"_iter.npy"                                       
-                    t = np.load(t_file)                                                                                      
-                else:
-                    t = []
+                    t_file = t_filenames_pre + str(save_start)+"_"+str(save_end)+"_iter.npy"                                             
+                    t      = np.load(t_file)
+                else:                                                                                                                                        
+                    t = [] 
+                start = save_end + 1                                                                                                     
+                if start < end: 
+                    Print_subtitle("Move the start to preivous end. Now we load data from", start, "to", end)
+        else:
+           Print_subtitle("No saved file overlaps with assigned period, start new arrays")                                      
+           t          = []                                                                                                                  
+           quant_data = []                                                                                                         
+           save_start = start 
 
-                start = save_end + 1                 
-                if start < end:
-                   Print_subsubtitle("Move the start to preivous end. Now we load data from", start, "to", end)
-
-            Print_text("Done reading in data, the dataset covers iteration:", save_start, " to:", save_end)                  
-        else: #file_exist == 0  
-            Print_subsubtitle("No saved file overlaps with assigned period, start new arrays")                                       
-            t = []
-            quant_data = []
-            save_start = start            
 
     if output_all:
         if succinct == "False": Print_subsubtitle("Output all is True!!!") 

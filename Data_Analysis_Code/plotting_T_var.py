@@ -12,6 +12,7 @@ myfonts = "Times New Roman"
 plt.rcParams['font.family'] = "sans-serif"                                                                                                                                                                          
 plt.rcParams['font.sans-serif'] = myfonts                                                                                                                                                                           
 from tqdm import tqdm                                                                                                                                                                                               
+from tqdm.gui import tqdm_gui
 
 from parameters import *                                                                                                                                                                                            
 from util import *     
@@ -33,7 +34,8 @@ deg = argv[5]    #midplane/80/70/photosphere
 quant2 = argv[6] #rho for computing photosphere
 quant3 = argv[7] #kappa for computing photosphere
 ph_mode = int(argv[8])
-succinct = argv[9]
+rad_cut = int(argv[9])
+succinct = argv[10]
 ########################################################################################################  
 
 
@@ -83,19 +85,19 @@ filename = "hist_"+str(start).zfill(5)+".npz"
 Print_text(filename)                                                                                                      
 data = np.load(dir+'/'+filename)                         
 
-r = Get_All_1D('radius', data, 1100, dir, succinct)   
+r = Get_All_1D('radius', data, rad_cut, dir, succinct)   
 if deg == 'photosphere':
     th = Get_All_1D('theta', data, -1, dir, succinct)
 ########################################################################################################  
 
 
 
-if str(case)[-2:] == '_2':                                                                                                                                                                                                        
-    Print_text('case: _2')                                                                                                                                                                                                             
-    idx = {"surface_density":6, 'rho':7, 'Er':8, 'kappa':9, 'Fr1':10, 'Fr2':11, 'B1_r1':12, 'B1_r2':13, 'B1_r3':14, 'B1_r4':15, 'B2_r1':16, 'B2_r2':17, 'B2_r3':18, 'B2_r4':19, 'B3_r1':20, 'B3_r2':21, 'B3_r3':22, 'B3_r4':23, 'PB_r2':25, 'PB_r3':26, 'PB_r4':27, 'pg_r1':28, 'pg_r2':29, 'pg_r3':30, 'pg_r4':31, 'rhovr':32, 'lambda_r1':33, 'lambda_r2':34, 'lambda_r3':35, 'lambda_r4':36}
-else:                                                                                                                                                                                                       
-    Print_text('case: no _2')                                                                                                                                                                                                          
-    idx = {"surface_density":6, 'rho1':7, 'rho2':8, 'rho3':9, 'rho4':10, 'Er1':11, 'Er2':12, 'Er3':13, 'Er4':14, 'kappa1':15, 'kappa2':16, 'kappa3':17, 'kappa4':18} 
+#if str(case)[-2:] == '_2':                                                                                                                                                                                                        
+#    Print_text('case: _2')                                                                                                                                                                                                             
+#    idx = {"surface_density":6, 'rho':7, 'Er':8, 'kappa':9, 'Fr1':10, 'Fr2':11, 'B1_r1':12, 'B1_r2':13, 'B1_r3':14, 'B1_r4':15, 'B2_r1':16, 'B2_r2':17, 'B2_r3':18, 'B2_r4':19, 'B3_r1':20, 'B3_r2':21, 'B3_r3':22, 'B3_r4':23, 'PB_r2':25, 'PB_r3':26, 'PB_r4':27, 'pg_r1':28, 'pg_r2':29, 'pg_r3':30, 'pg_r4':31, 'rhovr':32, 'lambda_r1':33, 'lambda_r2':34, 'lambda_r3':35, 'lambda_r4':36}
+#else:                                                                                                                                                                                                       
+#    Print_text('case: no _2')                                                                                                                                                                                                          
+#    idx = {"surface_density":6, 'rho1':7, 'rho2':8, 'rho3':9, 'rho4':10, 'Er1':11, 'Er2':12, 'Er3':13, 'Er4':14, 'kappa1':15, 'kappa2':16, 'kappa3':17, 'kappa4':18} 
 
 
 ######################################################################################################## 
@@ -115,9 +117,6 @@ if deg == "photosphere":
     
     t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True, succinct)
 ######################################################################################################## 
-#quant_data = quant_data[:-2]
-print(np.shape(t), np.shape(quant_data), file_exist)
-
 
 
 
@@ -125,7 +124,7 @@ print(np.shape(t), np.shape(quant_data), file_exist)
 ########################################################################################################
 # Iterate from start to end to compute and save time and quant
 ######################################################################################################## 
-pbar = tqdm(total=len(r))
+if succinct == "True": pbar = tqdm(total=end-start, desc='Files read')
 for iter in range(start, end):                                                                                                                                                                                                
         filename = "hist_"+str(iter).zfill(5)+".npz"                                                                                                                                                                              
         if succinct == "True": 
@@ -140,17 +139,16 @@ for iter in range(start, end):
             t.append(Get_Time(data, dir))
 
 
-
         if deg != "photosphere":
             if succinct == "False": Print_text("We are plotting quantities at "+str(deg)+"!!!") 
-            quant_data.append(data[quant][deg_idx][0:1100]) #midplane
+            quant_data.append(data[quant][deg_idx][0:rad_cut]) #midplane
 
         else:   #integrate rho*kappa to get photosphere
             if succinct == "False": Print_text("We are plotting quantities at the photosphere!!!")
 
-            r_data    = r[0:1100]                               # 0:1100 --> we only plot radius < 500 rg             
+            r_data    = r[0:rad_cut]   
             kappa_zip = list(zip(*data[quant3]))
-            kappa_data = kappa_zip[0:1100]      
+            kappa_data = kappa_zip[0:rad_cut]      
             th_data   = th        
                       
             # initialize an array for the indices of photosphere theta
@@ -162,19 +160,34 @@ for iter in range(start, end):
                     iphot.append(Get_Photosphere(th_data, kappa_data[it_r], r_data[it_r], hemi))
                 else:
                     iphot.append(Get_Photosphere2(th_data, kappa_data[it_r], r_data[it_r], mode, hemi)) 
-            
+ 
             # This line below is SUPER SLOW! 
             if file_exist == 0:
-                quant_data.append([data[quant][iphot[i]][i] for i in range(len(iphot))])
+                phot_data = []
+                if succinct == "False": pbar2 = tqdm(total=len(iphot), desc='Reading photosphere thetas in this file')
+                for i in range(len(iphot)):                                                                                         
+                    if succinct == "False": pbar2.update(n=1)                                                                                               
+                    phot_data.append(data[quant][iphot[i]][i])    
+                quant_data.append(phot_data)
+                #quant_data.append([data[quant][iphot[i]][i] for i in range(len(iphot))]) 
+                
+                if succinct == "False": Print_subsubtitle("The structure of the read data:", np.shape(quant_data))
+
             else:
-                quant_data = np.vstack([quant_data, [data[quant][iphot[i]][i] for i in range(len(iphot))]])
+                if succinct == "False": pbar3 = tqdm(total=len(iphot), desc='Reading photosphere thetas in this file')
+                phot_data = []
+                for i in range(len(iphot)):
+                    if succinct == "False": pbar3.update(n=1) 
+                    phot_data.append(data[quant][iphot[i]][i])
+                quant_data = np.vstack([quant_data,  phot_data])
                 print(np.shape(quant_data))
+                #quant_data = np.vstack([quant_data, [data[quant][iphot[i]][i] for i in range(len(iphot))]])
+                #pbar2.update(n=1)
 
 ######################################################################################################## 
 # Save files since appending above is too slow!!!
 ######################################################################################################## 
-            save_step = 30
-           
+            save_step = 10                       
             if iter > start and (iter%save_step == 0 or iter == end-1):             
                 save_quant_file_pre = checkpoint_path + "T_var_Er"
                 Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre, succinct)
@@ -205,7 +218,6 @@ for i in range(len(T_data)):
 
 
 T_var = list(zip(*T_var))
-
 ######################################################################################################## 
 
 

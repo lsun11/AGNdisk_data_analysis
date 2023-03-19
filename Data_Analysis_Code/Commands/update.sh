@@ -150,7 +150,7 @@ for case in ${cases[@]} ; do
        echo "$(printf '%*s' $(($center_position-15)) ) Plotting temperature variation plots at given locations      "
        echo $thin_b
        tput setaf 0 
-       python $code_path"plotting_T_var.py" $case $plot_T_var_q1 $start $end $plot_T_var_deg $plot_T_var_q2 $plot_T_var_q3 $plot_T_var_ph_mode $plot_T_var_succ
+       python $code_path"plotting_T_var.py" $case $plot_T_var_q1 $start $end $plot_T_var_deg $plot_T_var_q2 $plot_T_var_q3 $plot_T_var_ph_mode $plot_T_var_rad_cut $plot_T_var_succ
     fi
 
 

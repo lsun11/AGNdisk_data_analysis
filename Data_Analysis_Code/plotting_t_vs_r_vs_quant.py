@@ -90,15 +90,7 @@ th = Get_All_1D('theta', data, -1, dir, succinct)
 shift_theta = [np.abs(theta*rad_to_deg - float(theta_select)) for theta in th]   
 theta_idx = shift_theta.index(min(shift_theta))   
 ########################################################################################################
-
-t 	   = []
-if str(case)[-2:] == '_2':
-    print('case: _2')
-    idx = {"surface_density":6, 'rho':7, 'Er':8, 'kappa':9, 'Fr1':10, 'Fr2':11, 'B1_r1':12, 'B1_r2':13, 'B1_r3':14, 'B1_r4':15, 'B2_r1':16, 'B2_r2':17, 'B2_r3':18, 'B2_r4':19, 'B3_r1':20, 'B3_r2':21, 'B3_r3':22, 'B3_r4':23, 'PB_r1':24, 'PB_r2':25, 'PB_r3':26, 'PB_r4':27, 'pg_r1':28, 'pg_r2':29, 'pg_r3':30, 'pg_r4':31, 'rhovr':32, 'lambda_r1':33, 'lambda_r2':34, 'lambda_r3':35, 'lambda_r4':36}
-else:
-    print('case: no _2')
-    idx = {"surface_density":6, 'rho1':7, 'rho2':8, 'rho3':9, 'rho4':10, 'Er1':11, 'Er2':12, 'Er3':13, 'Er4':14, 'kappa1':15, 'kappa2':16, 'kappa3':17, 'kappa4':18}
-
+t 	    = []
 quant1_data = []
 quant2_data = []
 
@@ -121,8 +113,7 @@ for iter in range(start, end):
         else:                              # 2D data                      
             quant2_data.append( data[quant2][theta_idx] ) 
 
-print("Done reading data!")
-print(np.shape(quant1_data), np.shape(quant2_data))
+Print_subsubtitle("Done reading data! The structure of the data is:", str(quant1)+":", np.shape(quant1_data), str(quant2)+":", np.shape(quant2_data))
 
 
 if quant1 == "kappa" and quant2 == "rho":
@@ -140,10 +131,27 @@ if str(str(quant1)[0:3]) == "sur":   #surface_density
     logscale = True 
 elif str(str(quant1)[0:3]) == "rho":  
     color = 'BrBG_r'                                                                                             
-    pre_str = '\\rho/\\rho_0'
-    cbar_str = r'$\rho/\rho_0$'                                                                                   
-    fac  = 1.0/dens_to_cgs                                                                                             
+    pre_str = 'log_{10}(\\rho/\\rho_0)'
+    cbar_str = r'$$log_{10}(\rho/\rho_0)$'                  
+    fac  = 1.0                            # code unit rho is just rho_cgs/rho_0                                                                                             
     logscale = True                                                                                              
+if (str(quant1)[0:5]) == "sigma":                                                                         
+    color = 'bone'                                                                                        
+    if (str(quant2)[-1]) == "p":                                                                          
+        #pre_str = '\\kappa_{P}/\\kappa_{es}'                                                                         
+        #cbar_str = r'$\kappa_{Planck}/\kappa_{es}$'                                                      
+        pre_str = '\\kappa_{Plank}'                                                                                   
+        cbar_str = r'$\kappa_{Planck}$'                                                                   
+    else:                                                                                                 
+        #pre_str = '\\kappa_{R}/\\kappa_{es}'                                                                         
+        #cbar_str = r'$\kappa_{Rossland}/\kappa_{es}$'       
+        pre_str = '\\kappa_{Rossland}'                                                                    
+        cbar_str = r'$\kappa_{Rossland}$'                                                                 
+    fac  = 1.0/(dens_to_cgs*r_to_cgs)                                                                             
+    #v_max = 3.0        
+    #v_min = 0.0                                                                                                  
+    #fac = 1.0  
+    logscale = False               
 elif str(str(quant1)[0:2]) == "Er":   
     color = 'PRGn_r'                                                                                             
     pre_str = 'E_r'
@@ -158,17 +166,14 @@ elif str(str(quant1)[0:5]) == "kappa":
     logscale = True
 
 title = r'${}$'.format(pre_str) 
-print(title)
 xlabel = r'$t (s)$'
 ylabel = r'$\log_{10}(r/r_g)$'
 y_lim=(np.log10(100), np.log10(500))
 
-print(np.shape(quant1_data))
 ################## Logscale of q has been taken care of, set log_q to False here ###################################################################
 ax1 = Plotting_Mesh_YX(t, r, quant1_data, time_to_sec, 1.0, fac, False, True, logscale, color, None, y_lim, None, None, title, xlabel, ylabel, cbar_str, font)
 
 save_str = '_' + str(theta_select) + '_'  if len(np.shape(data[quant1])) == 2 else '_'
-print (save_str)
 
 savename = save_path + str(quant1) + '_vs_t_and_r_' + str(case) + str(save_str) + str(start) + '_' +str(end) + '_' + 'plot.png' 
 plt.savefig(savename,format='png',dpi=300)

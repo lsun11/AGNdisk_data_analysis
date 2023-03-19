@@ -45,7 +45,7 @@ plot_1D_tave_succ=True
 
 
 ### Make theta-average quantities vs r
-plot_1D_th_ave=Y
+plot_1D_th_ave=N
 
 plot_1D_th_ave_q1=rhovr
 plot_1D_th_ave_q2=None
@@ -70,11 +70,11 @@ plot_T_var=Y
 
 plot_T_var_deg=photosphere
 plot_T_var_q1=Er
-plot_T_var_deg=photosphere
 plot_T_var_q2=rho
 plot_T_var_q3=sigma
 plot_T_var_ph_mode=-1
-plot_T_var_succ=True
+plot_T_var_rad_cut=1100
+plot_T_var_succ=False
 
 ########################### Stuff to modify when initialzie the code #########################
 
