@@ -175,6 +175,11 @@ t 	    = []
 quant1_data = []
 quant2_data = []
 quant3_data = []
+quant_list_data  = []
+save_start_list  = []
+save_end_list    = []
+read_start_list  = []
+read_end_list    = []
 iphot_upper_total = []
 iphot_lower_total = []
 file_exist = 0
@@ -187,38 +192,62 @@ if plot_phot == "Y":
     if quant1 != "None":
         if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files") 
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"    
-        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+        quant1_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+        quant_list_data.append(quant1_data)
+        save_start_list.append(save_start)
+        read_start_list.append(read_start)
         idx += 1
     if quant2 != "None":
         if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-        quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)) 
+        quant2_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)) 
+        quant_list_data.append(quant2_data)
+        save_start_list.append(save_start)                                                                                                                    
+        read_start_list.append(read_start)
         idx += 1
     if quant3 != "None":                                                                                                                                             
         if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                                                    
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"                                                                           
-        quant3_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                         
+        quant3_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                         
+        quant_list_data.append(quant3_data)
+        save_start_list.append(save_start)                                                                                                                    
+        read_start_list.append(read_start)
         idx += 1
     if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
-    #print(idx, str(quant_list[idx]))
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-    iphot_upper_total = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+    iphot_upper_total, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+    quant_list_data.append(iphot_upper_total)
+    save_start_list.append(save_start)                                                                                                                    
+    read_start_list.append(read_start)
     idx += 1 
-    print(idx, str(quant_list[idx]))
+
     if succinct == "False": Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
     filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"             
-    t, iphot_lower_total, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)) 
+    #t, iphot_lower_total, file_exist, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)) 
+    iphot_lower_total, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+    quant_list_data.append(iphot_lower_total) 
+    save_start_list.append(save_start)                                                                                                                        
+    read_start_list.append(read_start)
 
+    if read_time == "True":
+        if succinct == "False": Print_subtitle("Compute time!!! First check saved files")
+        t_filenames = t_filenames_pre + "*"
+        t, time_save_start, time_read_start = list(Check_Load_Files(t_filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+        quant_list_data.append(t)
+
+
+
+    start = np.min(save_start_list)
     if succinct == "False": 
         Print_subtitle("Data structure after loading saved files:")                                               
-        Print_text("Time array:", np.shape(t)[0])                                                                 
-        Print_text("Quant_list:", quant_list)
-        Print_text("Quantity and its data set:")
-        Print_text(quant_list[0]+":", np.shape(quant1_data), quant_list[1]+":", np.shape(quant2_data))
-        #Print_text(quant_list[2]+":", np.shape(iphot_upper_total), quant_list[3]+":", np.shape(iphot_lower_total))
+        Print_text("Time array length:", np.shape(t)[0]) 
+        Print_text("The list of quantities and the shape of their data set:")
+        Print_text( [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] )
         Print_text("Starting iteration existed in the saved data:", save_start)                                   
-        Print_text("(!) Starting iteration for new computation:", start)                                          
+        Print_text("Save start and read start lists are:", save_start_list, read_start_list)
+        Print_text("(!) Starting iteration for new computation:", np.min(read_start_list))                                          
         Print_text("(!) Expected to read and plot data until iteration:", end) 
+
 else:    
     if len(quant_list) == 0:  # Probably we just want the time data here
         filenames = "It_doenst_matter"
@@ -227,38 +256,68 @@ else:
 
     if quant2 != "None":
         Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")
-        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))    
+        quant1_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))    
+        quant_list_data.append(quant1_data)
+        save_start_list.append(save_start)                                                                                                                        
+        read_start_list.append(read_start) 
         idx += 1 
         Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                             
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*" 
         if quant3 != "None":
-            quant2_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))  
+            quant2_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))  
+            quant_list_data.append(quant2_data)
+            save_start_list.append(save_start)
+            read_start_list.append(read_start)                                                                                                                         
             idx += 1                                                                                                                                                                  
             Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")    
             filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*"    
-            t, quant3_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))  
+            quant3_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))  
+            quant_list_data.append(quant3_data)
+            save_start_list.append(save_start)                                                                                                                        
+            read_start_list.append(read_start) 
         else:
-            t, quant2_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))
+            quant2_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+            quant_list_data.append(quant2_data)
+            save_start_list.append(save_start)                                                                                                                        
+            read_start_list.append(read_start) 
     elif quant3 != "None":
         Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")
-        quant1_data = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                                      
+        quant1_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))                                                      
+        quant_list_data.append(quant1_data)
+        save_start_list.append(save_start)
+        read_start_list.append(read_start)                                                                                                                         
         idx += 1       
         Print_subtitle("Compute " + str(quant_list[idx]) + "!!! First check saved files")                     
         filenames = quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_*" 
-        t, quant3_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct))
+        quant3_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))
+        quant_list_data.append(quant3_data)
+        save_start_list.append(save_start)                                                                                                                        
+        read_start_list.append(read_start) 
     else:
-        t, quant1_data, file_exist, save_start, start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)) 
+        quant_list_data.append(quant1_data)
+        quant1_data, save_start, read_start = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)) 
+        save_start_list.append(save_start)
+        read_start_list.append(read_start)                                                                                                                         
+   
+    if read_time == "True":                                                                                                                                                                                                                             
+        if succinct == "False": Print_subtitle("Compute time!!! First check saved files") 
+        t_filenames = t_filenames_pre + "*"
+        t, time_save_start, time_read_start = list(Check_Load_Files(t_filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))   
+        quant_list_data.append(t)
 
+    start = np.min(save_start_list)
     if succinct == "False": 
         Print_subtitle("Data structure after loading saved files:")                                                                                               
-        Print_text("Time array:", np.shape(t)[0])                                                                                                                 
-        Print_text("Quantity and its data set:")                                                                                                                  
-       #Print_text(quant_list[0]+":", np.shape(quant1_data), quant_list[1]+":", np.shape(quant2_data))                                                            
-       #Print_text(quant_list[2]+":", np.shape(iphot_upper_total), quant_list[3]+":", np.shape(iphot_lower_total))                                                
-        Print_text("Starting iteration existed in the saved data:", save_start)                                                                                   
-        Print_text("(!) Starting iteration for new computation:", start)                                                                                          
-        Print_text("(!) Expected to read and plot data until iteration:", end) 
-                                                                                                                                
+        Print_text("Time array length:", np.shape(t)[0])                                                              
+        Print_text("The list of quantities and the shape of their data set:")
+        Print_text( [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] ) 
+        Print_text("Starting iteration existed in the saved data:", save_start)                                          
+        Print_text("Save start and read start lists are:", save_start_list, read_start_list)                             
+        Print_text("(!) Starting iteration for new computation:", start)
+        Print_text("(!) Expected to read and plot data until iteration:", end)
+
+                    
+
 save_step = 20                                                                                                                  
 save_time_file_pre = checkpoint_path + "t_vs_th_vs_quant_time_" + str(radius_select)+"_" 
 
@@ -276,44 +335,53 @@ for iter in range(start, end):
             Print_subtitle("Reading file:", filename) 
         else:
             pbar.update(n=1)
-        if file_exist == 1:                                                                                                         
-            t = np.append(t, Get_Time(data, dir))                                                                                   
-        else:                                                                                                                       
-            t.append(Get_Time(data, dir))       
 
+
+        if iter >= time_read_start:
+            if len(t) > 0:   
+                t = np.append(t, Get_Time(data, dir))                                                                                   
+            else:                                                                                                                       
+                t.append(Get_Time(data, dir))       
+
+        
         if radius_select != "None":
             if succinct == "False": Print_subsubtitle("Reading 2D data, need to load values at a specific radius:", radius_select)
             shift_rad = [np.abs(rad - int(radius_select)) for rad in r]        
             radius_idx = shift_rad.index(min(shift_rad))        
-            if file_exist == 0:
-                if quant1 != "None":
-                    if quant1 == "pg":
-                        quant1_data.append( data[quant1][pg_idx[str(radius_select)]])
-                    else:                                                                                            
-                        quant1_data.append( [q[radius_idx] for q in data[quant1]])
-                if quant2 != "None":
-                    quant2_data.append( [q[radius_idx] for q in data[quant2]])
-                if quant3 != "None":                                                                                                                                 
-                    if quant3 == "pg":
-                        quant3_data.append( data[quant3][pg_idx[str(radius_select)]]) 
-                    else:
-                        quant3_data.append( [q[radius_idx] for q in data[quant3]])
-            else:
-                if quant1 != "None":
-                    if quant1 == "pg":                                         
-                        quant1_data = np.vstack( [quant1_data, [data[quant1][pg_idx[str(radius_select)]]] ] )  
-                    else:                                                                                                                           
-                        quant1_data = np.vstack( [quant1_data, [q[radius_idx] for q in data[quant1]] ] ) 
-                if quant2 != "None":  
-                    quant2_data = np.vstack( [quant2_data, [q[radius_idx] for q in data[quant2]] ] )
-                if quant3 != "None":                                                                                                                                 
-                    if quant3 == "pg":
-                        quant3_data = np.vstack( [quant3_data, [data[quant3][pg_idx[str(radius_select)]]] ] ) 
-                    else:
-                        quant3_data = np.vstack( [quant3_data, [q[radius_idx] for q in data[quant3]] ] )
-            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":", np.shape(quant2_data), quant3+":", np.shape(quant3_data))
 
-            if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!
+            if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
+                Print_text("Loading quantity: ", str(quant1))
+                if np.shape( quant_list_data[quant_list.index(quant1)] )[0] == 0:
+                    if quant1 == "pg":
+                        quant_list_data[quant_list.index(quant1)].append( data[quant1][pg_idx[str(radius_select)]] )
+                    else:                                                                                            
+                        quant_list_data[quant_list.index(quant1)].append( [q[radius_idx] for q in data[quant1]] )
+                else:
+                    if quant1 == "pg":                                                                                                                                                               
+                        quant_list_data[quant_list.index(quant1)] =  np.vstack( [quant_list_data[quant_list.index(quant1)], [data[quant1][pg_idx[str(radius_select)]]] ] )        
+                    else:                                                                                                                                                                                 
+                        quant_list_data[quant_list.index(quant1)] =  np.vstack( [quant_list_data[quant_list.index(quant1)], [q[radius_idx] for q in data[quant1]] ] )  
+ 
+            if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
+                Print_text("Loading quantity: ", str(quant2))  
+                if np.shape( quant_list_data[quant_list.index(quant2)] )[0] == 0: 
+                    quant_list_data[quant_list.index(quant2)].append( [q[radius_idx] for q in data[quant1]] )
+                else:
+                    quant_list_data[quant_list.index(quant2)] =  np.vstack( [quant_list_data[quant_list.index(quant2)], [q[radius_idx] for q in data[quant2]] ] )
+
+            if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
+                Print_text("Loading quantity: ", str(quant3))
+                if np.shape( quant_list_data[quant_list.index(quant3)] )[0] == 0: 
+                    if quant3 == "pg":
+                        quant_list_data[quant_list.index(quant3)].append( data[quant3][pg_idx[str(radius_select)]] ) 
+                    else:
+                        quant_list_data[quant_list.index(quant3)].append( [q[radius_idx] for q in data[quant3]] )
+                else:
+                    if quant3 == "pg":
+                        quant_list_data[quant_list.index(quant3)] =  np.vstack( [quant_list_data[quant_list.index(quant3)], [data[quant3][pg_idx[str(radius_select)]]] ] ) 
+                    else:
+                        quant_list_data[quant_list.index(quant3)] =  np.vstack( [quant_list_data[quant_list.index(quant3)], [q[radius_idx] for q in data[quant3]] ] )
+            if plot_phot == "Y" and iter >= read_start_list[quant_list.index("iphot_upper")]:
                 if succinct == "False": Print_text("Finding the photosphere!")
                 if ph_mode < 0:
                     iphot_upper = Get_Photosphere(th, [q[radius_idx] for q in data[quant2]], float(radius_select), 'upper')
@@ -321,41 +389,52 @@ for iter in range(start, end):
                 else:
                     iphot_upper = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), ph_mode, 'upper')
                     iphot_lower = Get_Photosphere2(th, [q[radius_idx] for q in data[quant2]], [q[radius_idx] for q in data[quant1]], float(radius_select), ph_mode, 'lower')
-                if file_exist == 0:
-                    iphot_upper_total.append(iphot_upper)
-                    iphot_lower_total.append(iphot_lower)
+                if  np.shape( quant_list_data[quant_list.index("iphot_upper")] )[0] == 0:
+                    quant_list_data[quant_list.index("iphot_upper")].append(iphot_upper)
                 else:
-                    iphot_upper_total = np.append(iphot_upper_total, iphot_upper)
-                    iphot_lower_total = np.append(iphot_lower_total, iphot_lower)
-            if succinct == "False": Print_text("Data structure of quantities:","iphot_upper_total:",np.shape(iphot_upper_total), "iphot_lower_total:",np.shape(iphot_lower_total))
-        else:
+                    quant_list_data[quant_list.index("iphot_upper")] = np.append( quant_list_data[quant_list.index("iphot_upper")], iphot_upper)  
+
+                if  np.shape( quant_list_data[quant_list.index("iphot_lower")] )[0] == 0: 
+                    quant_list_data[quant_list.index("iphot_lower")].append(iphot_lower)
+                else:
+                    quant_list_data[quant_list.index("iphot_lower")] = np.append( quant_list_data[quant_list.index("iphot_lower")], iphot_lower)
+
+            if succinct == "False": 
+                Print_text("Data structure of quantities:", "time,", len(t), [ (q, np.shape(quant_list_data[quant_list.index(q)]) ) for q in quant_list ] )
+
+        else:  # radius_select == None (probably will be deprecated soon)
             if succinct == "False": Print_subsubtitle("Reading 1D data, radius already specified")
             if file_exist == 0:
-                if quant1 != "None":  
-                    quant1_data.append(data[quant1])
-                if quant2 != "None":  
-                    quant2_data.append(data[quant2])
-                if quant3 != "None":                                                                                                                                 
-                    quant3_data.append(data[quant3])
+                if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
+                    Print_text("Loading quantity: ", str(quant1))  
+                    quant_list_data[quant_list.index(quant1)].append( data[quant1] )
+                if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
+                    Print_text("Loading quantity: ", str(quant2))  
+                    quant_list_data[quant_list.index(quant2)].append( data[quant2] )
+                if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
+                    Print_text("Loading quantity: ", str(quant3))                                                                                                                  
+                    quant_list_data[quant_list.index(quant3)].append( data[quant3] ) 
             else:
-                if quant1 != "None":  
-                    quant1_data = np.vstack( [quant1_data, data[quant1]])
-                if quant2 != "None":   
-                    quant2_data = np.vstack( [quant2_data, data[quant2]])
-                if quant3 != "None":                                                                                                                                 
-                    quant3_data = np.vstack( [quant2_data, data[quant3]])
-            if succinct == "False": Print_text("Data structure of quantities:", quant1+":", np.shape(quant1_data), quant2+":",np.shape(quant2_data), quant3+":", np.shape(quant3_data)) 
-            if plot_phot == "Y":     # make sure your data[quant2] is kappa (or kappa*rho in reality) here!!!!                                                                                            
+                if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
+                    Print_text("Loading quantity: ", str(quant1))    
+                    quant_list_data[quant_list.index(quant1)] = np.vstack( [quant_list_data[quant_list.index(quant1)], data[quant1]] )
+                if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
+                    Print_text("Loading quantity: ", str(quant2))  
+                    quant_list_data[quant_list.index(quant2)] = np.vstack( [quant_list_data[quant_list.index(quant2)], data[quant2]] ) 
+                if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
+                    Print_text("Loading quantity: ", str(quant3))                                                                                                                                   
+                    quant_list_data[quant_list.index(quant3)] = np.vstack( [quant_list_data[quant_list.index(quant3)], data[quant3]] )
+            if plot_phot == "Y" and iter > read_start_list[quant_list.index("iphot_upper")]:
                 Print_text("Finding the photosphere!")  
                 if ph_mode < 0: 
                     iphot_upper = Get_Photosphere(th, data[quant2], float(radius_select), 'upper')
                     iphot_lower = Get_Photosphere(th, data[quant2], float(radius_select), 'lower')
                 else:
-                    iphot_upper = Get_Photosphere(th, data[quant2], float(radius_select), ph_mode, 'upper')                                                                                          
-                    iphot_lower = Get_Photosphere(th, data[quant2], float(radius_select), ph_mode, 'lower')
-                iphot_upper_total.append(iphot_upper)                                                                                                                     
-                iphot_lower_total.append(iphot_lower) 
-            if succinct == "False": Print_text("Data structure of quantities:","iphot_upper_total:",np.shape(iphot_upper_total), "iphot_lower_total:",np.shape(iphot_lower_total))
+                    iphot_upper = Get_Photosphere2(th, data[quant2], float(radius_select), ph_mode, 'upper')                                                                                          
+                    iphot_lower = Get_Photosphere2(th, data[quant2], float(radius_select), ph_mode, 'lower')
+                quant_list_data[quant_list.index("iphot_upper")].append(iphot_upper)                                                                                                                                                             
+                quant_list_data[quant_list.index("iphot_lower")].append(iphot_lower)
+            if succinct == "False": Print_text("Data structure of quantities:", [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list])
 
 ########################################################################################################                      
 # Save files since appending above is too slow!!!                                                                             
@@ -365,28 +444,28 @@ for iter in range(start, end):
             idx = 0
             if quant1 != "None":  
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx]) 
-                Save_Files(save_step, iter, save_start, start, end, quant1_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant1)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
                 idx += 1
             if quant2 != "None":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, quant2_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct) 
+                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant2)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct) 
                 idx += 1
             if quant3 != "None":                                                                                                                                     
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                             
-                Save_Files(save_step, iter, save_start, start, end, quant3_data, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)    
+                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant3)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)    
                 idx += 1
             if plot_phot == "Y":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, iphot_upper_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index("iphot_upper")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
                 idx += 1 
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                  
-                Save_Files(save_step, iter, save_start, start, end, iphot_lower_total, quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index("iphot_lower")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
             if read_time == "True":
-                if succinct == "False": Print_subtitle("Saving time At Iteration", iter)
+                if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: time")
                 Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
 
 if succinct == "False": Print_subtitle("Done reading data!")                                                                                
-if succinct == "False": Print_text("The shape of the datasets are:", np.shape(quant1_data), np.shape(quant2_data), np.shape(quant3_data))
+if succinct == "False": Print_text("The shape of the datasets are:", [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] ) 
 
 
 
@@ -396,31 +475,33 @@ if succinct == "False": Print_text("The shape of the datasets are:", np.shape(qu
 if comp_Tr == 1:
     if succinct == "False": Print_subtitle("Computing Radiation Temperature!!!")
     if quant1 == 'Er':
-        quant1_data = [[qq**(0.25) for qq in q] for q in quant1_data]
+        quant1_data = [[qq**(0.25) for qq in q] for q in quant_list_data[quant_list.index(quant1)]]
     elif quant2 == 'Er':                                                                                                   
-        quant2_data = [[qq**(0.25) for qq in q] for q in quant2_data] 
+        quant2_data = [[qq**(0.25) for qq in q] for q in quant_list_data[quant_list.index(quant2)]] 
     quant1 = "Temp_r"
 
 if comp_Tg == 1:                                                                                                                                        
     if succinct == "False": Print_subtitle("Computing Gas Temperature!!!") 
-    quant1_data = [[qq3/qq1 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)]    
+    quant1_data = [[qq3/qq1 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant_list_data[quant_list.index(quant1)], quant_list_data[quant_list.index(quant3)])]    
     quant1 = "Temp_g" 
     
 if comp_angmom_rp == 1:
    if succinct == "False": Print_subtitle("Computing rhovrvphi - BrBp!!!") 
    print(np.shape(quant1_data), np.shape(quant3_data))
-   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)]
+   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant_list_data[quant_list.index(quant1)], quant_list_data[quant_list.index(quant3)])]
    quant1 = "Ang_rp"
 if comp_angmom_tp == 1:                                                                                         
    if succinct == "False": Print_subtitle("Computing rhovtvphi - BtBp!!!")                                      
-   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant1_data, quant3_data)] 
+   quant1_data = [[qq1 - qq3 for qq1,qq3 in zip(q1, q3)] for q1, q3 in zip(quant_list_data[quant_list.index(quant1)], quant_list_data[quant_list.index(quant3)])] 
    quant1 = "Ang_tp" 
 
 if comp_kappa == 1:
    if succinct == "False": Print_subtitle("Computing Opacity")
    # Note: the quantity in the line below: sigma(code)/rho(code) is just kappa/kappa_es! No additional factor needed!
-   quant1_data = [[qq2/qq1 for qq1,qq2 in zip(q1, q2)] for q1, q2 in zip(quant1_data, quant2_data)] 
-   #quant1_data = [[qq2/kappaes_code for qq2 in q2] for q2 in quant2_data] 
+   quant1_data = [[qq2/qq1 for qq1,qq2 in zip(q1, q2)] for q1, q2 in zip(quant_list_data[quant_list.index(quant1)], quant_list_data[quant_list.index(quant2)])] 
+
+if comp_Tr+comp_Tg+comp_angmom_rp+comp_angmom_tp+comp_kappa == 0:
+    quant1_data= quant_list_data[quant_list.index(quant1)] 
 
 Print_title(sp30, "Start Plotting!!!!", sp30)                                                                     
 ########################################################################################################          

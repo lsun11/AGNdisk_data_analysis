@@ -286,7 +286,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
         t          = []                                                                                                                                                                                                      
         quant_data = []                                                                                                                                                                                             
         save_start = start      
-
+        read_start = start
     else:
         save_list = []
         if len(save_file_list) > 0:                                                                                          
@@ -308,7 +308,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
                 Print_text("File", save_file_list[i], "not overlaps with assigned period [",start, end,"]") 
 
         if file_exist == 1:
-            Print_subtitle("Found best file: ", save_file_list[max_idx])
+            Print_subsubtitle("Found best file: ", save_file_list[max_idx])
             file       = save_file_list[max_idx]
             save_start = save_list[max_idx][0] 
             save_end   = save_list[max_idx][1]
@@ -322,28 +322,32 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
             quant_data = np.load(file)                                                                                                   
             Print_text("Structure of the readin file:", np.shape(quant_data)) 
 
-            if output_all:                                                                                                               
-                if read_time == "True":
-                    t_file = t_filenames_pre + str(save_start)+"_"+str(save_end)+"_iter.npy"                                             
-                    t      = np.load(t_file)
-                else:                                                                                                                                        
-                    t = [] 
-                start = save_end + 1                                                                                                     
-                if start < end: 
-                    Print_subtitle("Move the start to preivous end. Now we load data from", start, "to", end)
+            read_start = save_end + 1
+            if read_start < end:
+                Print_subtitle("Move the start to preivous end. Now we load data from", read_start, "to", end)
+
+            #if output_all:                                                                                                               
+            #    if read_time == "True":
+            #        t_file = t_filenames_pre + str(save_start)+"_"+str(save_end)+"_iter.npy"                                             
+            #        t      = np.load(t_file)
+            #    else:                                                                                                                                        
+            #        t = [] 
+                #start = save_end + 1                                                                                                     
+                #if start < end: 
+                #    Print_subtitle("Move the start to preivous end. Now we load data from", start, "to", end)
         else:
            Print_subtitle("No saved file overlaps with assigned period, start new arrays")                                      
            t          = []                                                                                                                  
            quant_data = []                                                                                                         
            save_start = start 
-
+           read_start = start
 
     if output_all:
         if succinct == "False": Print_subsubtitle("Output all is True!!!") 
-        return t, quant_data, file_exist, save_start, start
+        return t, quant_data, file_exist, save_start, read_start
     else:
         if succinct == "False": Print_subsubtitle("Output all is False!")
-        return quant_data
+        return quant_data, save_start, read_start
 
 
 ###############################################################################################################################

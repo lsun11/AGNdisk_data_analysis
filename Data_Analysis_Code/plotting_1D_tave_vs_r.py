@@ -163,10 +163,6 @@ for iter in range(start, end):
         if read_time == "True": 
             Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
                  
-#quant_data = [q for q in quant_data if q != []]
-#quant_list = [q for q in quant_list if q != "None"]
-#quant_list = list(map(lambda x: x.replace('rhovr', 'Mdot'), quant_list))
-
 if succinct == "False": Print_subsubtitle(np.shape(quant_data), np.shape(quant_data[0]), quant_list)
 
 

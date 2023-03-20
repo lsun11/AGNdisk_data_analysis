@@ -113,7 +113,7 @@ for case in ${cases[@]} ; do
     then
         tput setaf 31
         echo $thin_b
-        echo "$(printf '%*s' $(($center_position-22)) ) Plotting poloidal distribution plot of azimuthally-averaged quantity! "
+        echo "$(printf '%*s' $(($center_position-22)) ) Plotting poloidal distribution plot of azimuthally-averaged quantity! With possibly photosphere "
         echo $thin_b
         tput setaf 0
         for iter in ${plot_sin_cos_iter[@]}; do
@@ -126,7 +126,7 @@ for case in ${cases[@]} ; do
     then                                                                                                                                                                                                                                        
        tput setaf 31                                                                                                                                                                                                                            
        echo $thin_b    
-       echo "$(printf '%*s' $(($center_position-11)) ) Plotting theta-average quantities vs radius    "                                                                                                                                         
+       echo "$(printf '%*s' $(($center_position-11)) ) Plotting theta-average quantities vs radius (Ex. Mdot)    "                                                                                                                                         
        echo $thin_b                                                                                                                                                                                                                             
        tput setaf 0                                                                                                                                 
        python $code_path"plotting_1D_tave_vs_r.py" $case $start $end $plot_1D_th_ave_q1 $plot_1D_th_ave_q2 $plot_1D_th_ave_q3 $plot_1D_th_ave_q4 $plot_1D_th_ave_Mdot $plot_1D_th_ave_save_t $plot_1D_th_ave_succ
@@ -137,7 +137,7 @@ for case in ${cases[@]} ; do
     then     
        tput setaf 31                                                                                                         
        echo $thin_b                                                                                                          
-       echo "$(printf '%*s' $(($center_position-15)) ) Plotting quantity vs time vs radius plots at a given theta     " 
+       echo "$(printf '%*s' $(($center_position-15)) ) Plotting quantity vs time vs radius plots at a given theta (Ex. Suf_dens/kappa)    " 
        echo $thin_b                                                                                                          
        tput setaf 0                                                                                                          
        python $code_path"plotting_t_vs_r_vs_quant.py" $case $plot_t_r_q1 $plot_t_r_q2 $plot_t_r_theta $start $end $plot_t_r_succ
@@ -163,15 +163,57 @@ for case in ${cases[@]} ; do
         echo $thin_b
         tput setaf 0                 
 
-        if [[ $plot_t_th_dens =~ ^[Yy]$ ]];
-        then
+     #------------------------------plotting_t_vs_th_vs_quant.py--------------------------------#
+       if [[ $plot_t_th_dens =~ ^[Yy]$ ]];
+       then
            tput setaf 31
            echo $thin_b 
            echo "$(printf '%*s' $(($center_position-13)) ) Plotting density vs time vs theta (with photosphere)   "
            echo $thin_b 
            tput setaf 0
            python $code_path"plotting_t_vs_th_vs_quant.py" $case rho $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ
-        fi
+       fi
+
+       if [[ $plot_t_th_Trad =~ ^[Yy]$ ]];                                                                                                                                                                         
+       then                                                                                                                                                                                                        
+           tput setaf 31                                                                                                                                                                                            
+           echo $thin_b                                                                                                                                                                                             
+           echo "$(printf '%*s' $(($center_position-17)) ) Plotting radiation temperature vs time vs theta (with photosphere)   "      
+           echo $thin_b                                                                                                                                                                                             
+           tput setaf 0                                                                                                                                                                                             
+           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_r $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
+       fi
+
+       if [[ $plot_t_th_Tgas =~ ^[Yy]$ ]];                                                                                                                                                                          
+       then                                                                                                                                                                                                        
+           tput setaf 31                                                                                                                                                                                            
+           echo $thin_b                                                                                                                                                                                             
+           echo "$(printf '%*s' $(($center_position-15)) ) Plotting gas temperature vs time vs theta (with photosphere)   "                                                                                                 
+           echo $thin_b                                                                                                                                                                                             
+           tput setaf 0                                                                                                                                                                                             
+           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_gas $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
+       fi
+
+       if [[ $plot_t_th_Ang_rp =~ ^[Yy]$ ]];                                                                                                                                                                          
+       then                                                                                                                                                                                                         
+           tput setaf 31                                                                                                                                                                                            
+           echo $thin_b                                                                                                                                                                                             
+           echo "$(printf '%*s' $(($center_position-15)) ) Plotting gas temperature vs time vs theta (with photosphere)   "                                                                                         
+           echo $thin_b                                                                                                                                                                                             
+           tput setaf 0                                                                                                                                                                                             
+           python $code_path"plotting_t_vs_th_vs_quant.py" $case Ang_rp $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                              
+       fi
+
+       if [[ $plot_t_th_Ang_tp =~ ^[Yy]$ ]];                                                                                                                                                                          
+       then                                                                                                                                                                                                         
+           tput setaf 31                                                                                                                                                                                            
+           echo $thin_b                                                                                                                                                                                             
+           echo "$(printf '%*s' $(($center_position-15)) ) Plotting gas temperature vs time vs theta (with photosphere)   "                                                                                         
+           echo $thin_b                                                                                                                                                                                             
+           tput setaf 0                                                                                                                                                                                             
+           python $code_path"plotting_t_vs_th_vs_quant.py" $case Ang_tp $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                              
+       fi 
+      #------------------------------------------------------------------------------------------#
 
         if [[ $plot_1D_tave =~ ^[Yy]$ ]];                                                                                                                                                                         
         then                                                                                                                                                                                                        
@@ -191,7 +233,7 @@ for case in ${cases[@]} ; do
            echo $thin_b                                                                                               
            tput setaf 0                                                                                               
            python $code_path"plotting_1D_tave_vs_theta.py" $case $start $end $radius $plot_1D_tave_q1 $plot_1D_tave_q2 $plot_1D_tave_q3 $plot_1D_tave_q4 vs_t $plot_1D_tave_save_t $plot_1D_tave_succ
-        fi        
+        fi
 
 
 

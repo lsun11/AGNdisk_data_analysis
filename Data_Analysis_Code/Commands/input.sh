@@ -23,12 +23,17 @@ plot_sin_cos_succ=False
 
 ### Make density vs times vs theta (with photosphere)
 plot_t_th_dens=N
+plot_t_th_Trad=N
+plot_t_th_Tgas=N
+plot_t_th_Ang_rp=N
+plot_t_th_Ang_tp=N
 
 plot_t_th_sigma=sigma  #(sigma/sigma_p)
 plot_t_th_phot=Y
 plot_t_th_phot_mode=-1
 plot_t_th_phot_save_t=True
 plot_t_th_phot_succ=True
+
 
 
 
