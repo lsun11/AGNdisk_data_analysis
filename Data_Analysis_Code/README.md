@@ -1,5 +1,6 @@
 # Welcome to use the AGNdisk Data Analysis code for Atheta++
 ![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/code_screen_shot.png)
+(↑ The screen shot of the starting interaface of the code!)
 
 This is a codebase mainly consists of Python code controlled by bash commands scripts that can automatically create beautiful and professional plots by loading/reading the output .npz files from the Athena++ astrophysical magnetohydrodynamics (MHD) code in C++
 
@@ -8,9 +9,12 @@ How to use:
 
 &nbsp; &nbsp; &nbsp; 1). figlet https://linuxhint.com/figlet-command-linux/
 
+<font size="2">(note: some version of the figlet may not have the font in the screenshot above, you can simply switch it to another font in `update.sh` or just leave it blank)</font>
+
 &nbsp; &nbsp; &nbsp; 2). colorama https://pypi.org/project/colorama/
 
-2. Download the code in the location directory. First you can run a (relatively) quick tests by hitting ./update_test.sh in the /Command directory. This tests plots a very short period of all types of data and it takes about 20 mintues. For full run some data requries reading huge amount of data and could take hours or even days to finish. 
+
+2. Download the code in the location directory. First you can run a (relatively) quick tests by hitting `./update_test.sh` in the `/Command` directory. This tests plots a very short period of all types of data and it takes about 20 mintues. For full run some data requries reading huge amount of data and could take hours or even days to finish. 
 
 &nbsp; &nbsp;  &nbsp;  &nbsp; **Note**: It's recommended to rename the plotting and checkpoint directories in parameter.py before running the test:
 
@@ -24,4 +28,6 @@ How to use:
        Plot_dir             = Data_dir + 'PLOTS_Test/'
        Checkpoint_dir       = Data_dir + 'Checkpoint_Test/'
 so the test plots and checkpoints will be saved in separated places. For production run you can change it back or rename to whatever you like. 
+
+3. To run the code in full length, you need to modify the script `input.sh` in the `/Command` directory.
      
