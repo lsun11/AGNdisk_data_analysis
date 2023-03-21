@@ -42,6 +42,13 @@ You can run a (relatively) quick tests by hitting `./update_test.sh` in the `/Co
        Checkpoint_dir       = Data_dir + 'Checkpoint_Test/'
 so the test plots and checkpoints will be saved in separated places. For production run you can change it back or rename to whatever you like.   
 
+If the test runs successfully, you should see plots are saved in `Plot_dir` you set (see the following picture as an example) and checkpoints files in `Checkpoint_dir`:
+
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/test.png)
+
+
+
+
 ### 3. To run the code in full length, you need to modify the script `input.sh` in the `/Command` directory.
 
 &nbsp; &nbsp; &nbsp; **1). The first** section in `input.sh` has variables that needed to be modified for each run.
@@ -92,5 +99,29 @@ The other parameters for each varies but there are several common ones with the 
 
 ### 4. The analyzing/plotting procedure.
 
-Once the `input.sh` file is set properly, we can start launching the code by typing `update.sh`.
+Once the `input.sh` file is set properly, we can start launching the code by typing `./update.sh`.
+
+After the starting screen (shown above), the first stage is **initialization**:
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/1.png)
+
+Here the code checks if all the directories are set properly. If the directories don't exsit, the code creates them. If they exisit, the code shows the contents inside.
+
+
+The second stage is **data mounting**:
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/2.png)
+
+Here the code would link the remote database to local directories if the data is not already linked. You need input the password of your remote access point here:
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/2-2.png)
+
+
+The third stage is **plotting**:
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/3.png)
+
+Now the code starts read/load data and make plots based on input.sh. More details will output if the succtint parameter is set to "False", otherwise the output are mostly in forms of progress bars.  
+
+
+Lastly, the entire process is completed if the following appears:
+![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/4.png)
+
+
 
