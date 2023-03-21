@@ -124,9 +124,21 @@ The third stage is **plotting**:
 
 Now the code starts read/load data and make plots based on input.sh. More details will output if the succtint parameter is set to "False", otherwise the output are mostly in forms of progress bars.  
 
-
+`
 Lastly, the entire process is completed if the following appears:
 ![alt text](https://github.com/lsun11/AGNdisk_data_analysis/blob/main/Data_Analysis_Code/readme_pics/4.png)
 
 
+### 5. Usage of other files
 
+Besides `update.sh` and `update_test.sh`, there are some other files that can be used separately in \Commands.
+
+`clean_plots.sh`: delete all files in `PLOT_dir`, **use it carefully**.  
+`clean_checkpoints.sh`: delete all files in `Checkpoint_dir`, **use it carefully**.  
+`clean_test.sh`: remove all the directories related to the tests and the files in them.   
+`input_test.sh`: the input file for the tests. It's in the same format as input.sh. 
+
+Moreover, the python plotting files can also be used separately. Some exmaple commands are included in the header commends in each script.
+
+    e.g. in plotting_1D_tave_vs_r.py   
+    #**Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8 2000 3568 rhovr None None None True True False 
