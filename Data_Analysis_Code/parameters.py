@@ -1,7 +1,10 @@
 # This script has all the constants, unit factors, and common directories used by almost every program.  
 
-c = 29979245800.0
+from sys import argv
+from util import *
+import os
 
+c = 29979245800.0
 rad_to_deg = 57.2958
 time_to_sec = 495.0766 
 r_to_cgs = 1.4842e13
@@ -22,9 +25,11 @@ M_BH = 1.0e8
 Mdot_Edd_cgs = 1.4e18*M_BH                         # in g/s
 
 # Dictories to save plots and checkpoints 
-Data_dir             = '/home/lunan/mnt/AGNWedge8_product2/'
-Plot_dir             = Data_dir + 'PLOTS/'
-Checkpoint_dir       = Data_dir + 'Checkpoint/'
+#Data_dir             = '/home/lunan/mnt/AGNWedge8_product2/'
+Data_dir             = os.path.dirname(os.path.dirname(os.getcwd()))+'/'  # use two layers --> the script is called in /Command dir
+Plot_dir             = Data_dir + 'PLOTS_TEST/'
+Checkpoint_dir       = Data_dir + 'Checkpoint_TEST/'
+
 
 # Standard font
 font = {'family': 'sans-serif',                                                                                                                                                                                     

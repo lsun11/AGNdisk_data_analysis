@@ -365,7 +365,7 @@ def Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, output_
 # succinct: If we print succinct ('True') info or detailed ('False') info
 ###############################################################################################################################
 
-def Save_Files(save_step, iter, save_start, start, end, quant_data, save_file_pre, succinct):
+def Save_Files(save_step, iter, save_start, quant_data, save_file_pre, succinct):
     name_body = "_"
     for item in [str(save_start), str(iter)]:
         if item != "None":
@@ -418,15 +418,15 @@ def Plotting_Mesh(x,y,q,x_fac,y_fac,q_fac,log_x,log_y,log_q, color, x_lim, y_lim
 
     X, Y = np.meshgrid(x, y) 
     
-    Print_subsubtitle(X, Y, np.shape(X), np.shape(Y))
+    #Print_subsubtitle(X, Y, np.shape(X), np.shape(Y))
     Print_subsubtitle(np.shape(q))   
 
     X *= x_fac
     Y *= y_fac
-    if len(np.shape(q)) == 3:
-       q = [ [qqq*q_fac for qqq in qq] for qq in q]
-    elif len(np.shape(q)) == 2:
-       q = [ qq*q_fac for qq in q] 
+    #if len(np.shape(q)) == 3:
+    q = [ [qqq*q_fac for qqq in qq] for qq in q]
+    #elif len(np.shape(q)) == 2:
+    #   q = [ qq*q_fac for qq in q] 
     
     if log_x:
         print("x in logscale!")
@@ -448,13 +448,13 @@ def Plotting_Mesh(x,y,q,x_fac,y_fac,q_fac,log_x,log_y,log_q, color, x_lim, y_lim
 
     fig, ax1 = plt.subplots(1, 1)
  
-    print(np.shape(X_plot), np.shape(Y_plot), np.shape(Q_plot))
+    #print(np.shape(X_plot), np.shape(Y_plot), np.shape(Q_plot))
     if v_min != None and v_max != None:
         im0 = ax1.pcolormesh(X_plot, Y_plot, Q_plot, cmap=color, shading='auto', vmax=v_max, vmin=v_min)    
     else:    
         im0 = ax1.pcolormesh(X_plot, Y_plot, Q_plot, cmap=color, shading='auto')
 
-    cbar =fig.colorbar(im0, ax=ax1, fontdict = font_dict)
+    cbar =fig.colorbar(im0, ax=ax1)
     if cbar_title != "None":
         cbar.ax.set_ylabel(cbar_title, rotation = 90)
 

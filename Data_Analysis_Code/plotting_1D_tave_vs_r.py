@@ -6,7 +6,7 @@
 # 4-7. list of reading/loading quantities  8. compute Mdot?
 # 9. read/load time files? (set to False if we want to generate quantity files only)  10. succinct output?
 ############################################################################################################################################ 
-#Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8_2 2000 3568 rhovr None None None True True False
+#**Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8 2000 3568 rhovr None None None True True False
 
 import numpy as np                                                                                                 
 import os                                                                                                          
@@ -89,30 +89,37 @@ if succinct == "False": Print_subtitle("The datasets we want to read in are:", q
 
 t = []                                                                                                                   
 quant_data = []                                                                                                          
+save_start_list = []                                                                                                                                                                                        
+read_start_list = [] 
 for item in quant_list:                                                                                                  
     quant_data.append([]) 
+    save_start_list.append([])                                                                                                                                                                              
+    read_start_list.append([])
 
 file_exist = 0
 for idx, quant in enumerate(quant_list):
     Print_subtitle("Compute " + str(quant) + "!!! First check saved files")     
-    filenames = checkpoint_path + "T_ave_"+str(quant)+"_vs_r*" 
-    t_filenames_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time_"
+    filenames = checkpoint_path + "T_ave_vs_r_"+str(quant)+"_*" 
+    t_filenames_pre = checkpoint_path + "Tave_vs_r_time_"+str(quant)+"__"
         
-    if idx != len(quant_list)-1 :                                                                                        
-        quant_data[idx] = list(Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct))   
-    else:                                                                                                                
-        t, quant_data[idx], file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, read_time, succinct)
-        if succinct == "False":                                                                                           
-            Print_subtitle("Data structure after loading saved files:")                                                  
-            Print_text("Time array:", np.shape(t)[0])                                                                    
-            Print_text("Quantity and its data set:",[[quant_list[idx], np.shape(quant_data[idx])] for idx in range(len(quant_list))])
-            Print_text("Starting iteration existed in the saved data:", save_start)                                                  
-            Print_text("(!) Starting iteration for new computation:", start)                                             
-            Print_text("(!) Expected to read and plot data until iteration:", end)
+    quant_data[idx], save_start_list[idx], read_start_list[idx] = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)
+
+
+if read_time == "True": 
+    t, time_save_start, time_read_start = Check_Load_Files(t_filenames_pre+"*", t_filenames_pre, file_exist, start, end, False, read_time, succinct)
+    
+if succinct == "False":                                                                                           
+    Print_subtitle("Data structure after loading saved files:")                                                  
+    Print_text("Time array:", np.shape(t)[0])                                                                    
+    Print_text("The list of quantities and the shape of their data set:")                                                                                                                                   
+    Print_text( [ (q, np.shape(quant_data[quant_list.index(q)])) for q in quant_list] )                                                                                                                     
+    Print_text("Save start and read start lists are:", save_start_list, read_start_list)
+    Print_text("(!) Starting iteration for new computation:", start)                                             
+    Print_text("(!) Expected to read and plot data until iteration:", end)
 
 save_step = 10
-save_quant_file_pre = checkpoint_path + "T_ave_"+str(quant)+"_vs_r"
-save_time_file_pre = checkpoint_path + "Tave_"+str(quant)+"_vs_r_time" 
+save_quant_file_pre = checkpoint_path + "T_ave_vs_r"+str(quant) + "_"
+save_time_file_pre = checkpoint_path + "Tave_vs_r_time"+str(quant) + "_"
 
 pbar = tqdm(total=end-start+1)
 for iter in range(start, end):                                                                                   
@@ -127,7 +134,7 @@ for iter in range(start, end):
     #  Check the quantity data is 1D or 2D    
     #############################################
     for idx, quant in enumerate(quant_list):
-        if quant != 'None':
+        if quant != 'None' and iter >= read_start_list[quant_list.index(quant)]:
                 if quant == 'Mdot':                    
                     idx_Mdot = idx
                     fac = 2 * np.pi * Mdot_to_cgs/Mdot_Edd_cgs
@@ -137,31 +144,32 @@ for iter in range(start, end):
                        integral = np.sum([rhovr*np.sin(theta)*dtheta for rhovr, theta, dtheta in zip(zip_data[i], th, dth)])
                        integrals.append(integral*fac*r[i]**2)                   
                     #################### Mdot = 2pi * r^2 * Sum( rhovr[theta] * sintheta * dtheta ) ################
-                    if file_exist == 0:
+                    if np.shape( quant_data[idx] )[0] == 0: 
                         quant_data[idx].append(integrals)
                     else:
                         quant_data[idx] = np.vstack([quant_data[idx], integrals]) 
                 else:
-                    if file_exist == 0:
+                    if np.shape( quant_data[idx] )[0] == 0: 
                         quant_data[idx].append(list(data[quant]))            
                     else:
                         quant_data[idx] = np.vstack([quant_data[idx], list(data[quant])])
 
     # Get time after Mdot data in case saved time files exists
-    if file_exist == 0: 
+    if read_time == "True" and iter >= time_read_start:                                                                                                                                                 
         t.append(Get_Time(data, dir))  
     else:
         t = np.append(t, Get_Time(data, dir))
+    
     if succinct == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])  
 
 ########################################################################################################                               
 # Save files since appending above is too slow!!!                                      
 ########################################################################################################
     if iter > start and (iter%save_step == 0 or iter == end-1):
-        Save_Files(save_step, iter, save_start, start, end, quant_data[idx_Mdot], save_quant_file_pre, succinct)
+        Save_Files(save_step, iter, save_start_list[idx], quant_data[idx_Mdot], save_quant_file_pre, succinct)
         
         if read_time == "True": 
-            Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
+            Save_Files(save_step, iter, time_save_start, t, save_time_file_pre, succinct)
                  
 if succinct == "False": Print_subsubtitle(np.shape(quant_data), np.shape(quant_data[0]), quant_list)
 

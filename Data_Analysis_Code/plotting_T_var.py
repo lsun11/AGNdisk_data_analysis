@@ -1,6 +1,6 @@
 #THIS SCRIPT PLOTS THE TEMPERATURE VARIATIONS VS TIME AND RADIUS
 #Location can be chosen at: midplane, theta = 80deg, theta = 70deg, and photosphere
-#Example command: python plotting_T_var.py Wedge8_2 Er 3000 3050 photosphere rho kappa -1 False
+#Example command: python plotting_T_var.py Wedge8 Er 3000 3050 photosphere rho sigma -1 1100 False
 
 import numpy as np                                                                                                                                                                                                  
 import os                                                                                                                                                                                                           
@@ -38,8 +38,6 @@ rad_cut = int(argv[9])
 succinct = argv[10]
 ########################################################################################################  
 
-
-                                                                                                                                                                                                                                  
 ########################################################################################################  
 #  set paths based on cases
 ########################################################################################################  
@@ -62,8 +60,6 @@ elif str(case).find('Wedge10') == 0:
 dir = Data_dir + 'DATA' + str(case)                                                                                                                                                                                                            
 ######################################################################################################## 
 
-
-
 ########################################################################################################                 
 #  set degree indices  (Currenly hard-coded since the size of array if fixed to be 2048)
 ########################################################################################################
@@ -74,8 +70,6 @@ elif deg == "80":
 elif deg == "70":                                                                                                        
     deg_idx = 1023*7//9 
 ########################################################################################################                 
-
-
 
 ########################################################################################################  
 # Getting the radius and theta array:
@@ -89,15 +83,6 @@ r = Get_All_1D('radius', data, rad_cut, dir, succinct)
 if deg == 'photosphere':
     th = Get_All_1D('theta', data, -1, dir, succinct)
 ########################################################################################################  
-
-
-
-#if str(case)[-2:] == '_2':                                                                                                                                                                                                        
-#    Print_text('case: _2')                                                                                                                                                                                                             
-#    idx = {"surface_density":6, 'rho':7, 'Er':8, 'kappa':9, 'Fr1':10, 'Fr2':11, 'B1_r1':12, 'B1_r2':13, 'B1_r3':14, 'B1_r4':15, 'B2_r1':16, 'B2_r2':17, 'B2_r3':18, 'B2_r4':19, 'B3_r1':20, 'B3_r2':21, 'B3_r3':22, 'B3_r4':23, 'PB_r2':25, 'PB_r3':26, 'PB_r4':27, 'pg_r1':28, 'pg_r2':29, 'pg_r3':30, 'pg_r4':31, 'rhovr':32, 'lambda_r1':33, 'lambda_r2':34, 'lambda_r3':35, 'lambda_r4':36}
-#else:                                                                                                                                                                                                       
-#    Print_text('case: no _2')                                                                                                                                                                                                          
-#    idx = {"surface_density":6, 'rho1':7, 'rho2':8, 'rho3':9, 'rho4':10, 'Er1':11, 'Er2':12, 'Er3':13, 'Er4':14, 'kappa1':15, 'kappa2':16, 'kappa3':17, 'kappa4':18} 
 
 
 ######################################################################################################## 
@@ -115,7 +100,11 @@ if deg == "photosphere":
     filenames = checkpoint_path + "T_var_Er*"
     t_filenames_pre = checkpoint_path + "T_var_time_"
     
-    t, quant_data, file_exist, save_start, start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, True, True, succinct)
+    quant_data, save_start, q_start = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, True, succinct)
+    t, time_save_start, t_start = Check_Load_Files(t_filenames_pre+'*', t_filenames_pre, file_exist, start, end, False, True, succinct)
+
+print(t)
+start = np.min([q_start, t_start])
 ######################################################################################################## 
 
 
@@ -125,7 +114,7 @@ if deg == "photosphere":
 # Iterate from start to end to compute and save time and quant
 ######################################################################################################## 
 if succinct == "True": pbar = tqdm(total=end-start, desc='Files read')
-for iter in range(start, end):                                                                                                                                                                                                
+for iter in range(start, end):
         filename = "hist_"+str(iter).zfill(5)+".npz"                                                                                                                                                                              
         if succinct == "True": 
             pbar.update(n=1)
@@ -133,10 +122,11 @@ for iter in range(start, end):
             Print_subtitle(filename)     
         data = np.load(dir+'/'+filename)      
 
-        if file_exist == 1:
-            t = np.append(t, Get_Time(data, dir))
-        else:
-            t.append(Get_Time(data, dir))
+        if iter >= t_start:
+            if len(t) > 0:
+                t = np.append(t, Get_Time(data, dir))
+            else:
+                t.append(Get_Time(data, dir))
 
 
         if deg != "photosphere":
@@ -162,7 +152,7 @@ for iter in range(start, end):
                     iphot.append(Get_Photosphere2(th_data, kappa_data[it_r], r_data[it_r], mode, hemi)) 
  
             # This line below is SUPER SLOW! 
-            if file_exist == 0:
+            if np.shape(quant_data)[0] == 0:
                 phot_data = []
                 if succinct == "False": pbar2 = tqdm(total=len(iphot), desc='Reading photosphere thetas in this file')
                 for i in range(len(iphot)):                                                                                         
@@ -180,7 +170,6 @@ for iter in range(start, end):
                     if succinct == "False": pbar3.update(n=1) 
                     phot_data.append(data[quant][iphot[i]][i])
                 quant_data = np.vstack([quant_data,  phot_data])
-                print(np.shape(quant_data))
                 #quant_data = np.vstack([quant_data, [data[quant][iphot[i]][i] for i in range(len(iphot))]])
                 #pbar2.update(n=1)
 
@@ -190,10 +179,10 @@ for iter in range(start, end):
             save_step = 10                       
             if iter > start and (iter%save_step == 0 or iter == end-1):             
                 save_quant_file_pre = checkpoint_path + "T_var_Er"
-                Save_Files(save_step, iter, save_start, start, end, quant_data, save_quant_file_pre, succinct)
+                Save_Files(save_step, iter, save_start, quant_data, save_quant_file_pre, succinct)
 
                 save_time_file_pre = checkpoint_path + "T_var_time"
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct) 
+                Save_Files(save_step, iter, save_start,  t, save_time_file_pre, succinct) 
 
 ########################################################################################################
 # Set file_exist to 0. This is necessary if the script is called multiple times at once 
@@ -209,7 +198,7 @@ if deg == "photosphere":
 
 
 T_data = [q**0.25 for q in quant_data]
-print(np.shape(T_data))
+
 T_ave = [np.average(T) for T in T_data]
 T_var = []
 
@@ -240,14 +229,16 @@ ylim = None
 v_max = None
 v_min = None
 title = r'$(\delta T_{rad}/T_{rad})/Scale$'
+cbar_title = r'$(\delta T_{rad}/T_{rad})/Scale$'  
 xlabel = 'Time (s)'
 ylabel = '$\log_{10}(r/r_g)$'
+
 
 time_start = int(t[0]*time_to_sec)
 savename = save_path+'photosphere_rad_temperature_var_'+str(case)+'_'+str(deg)+'_t_'+str(time_start)+'.png'
 font_dict = font
 
-Plotting_Mesh(x,y,q,x_fac,y_fac,q_fac,log_x,log_y,log_q, color, xlim, ylim, v_max, v_min, title, xlabel, ylabel, font_dict)
+Plotting_Mesh(x,y,q,x_fac,y_fac,q_fac,log_x,log_y,log_q, color, xlim, ylim, v_max, v_min, title, xlabel, ylabel, cbar_title, font_dict)
 plt.savefig(savename,format='png',dpi=300)
 
 '''

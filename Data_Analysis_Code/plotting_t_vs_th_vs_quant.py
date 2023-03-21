@@ -243,7 +243,6 @@ if plot_phot == "Y":
         Print_text("Time array length:", np.shape(t)[0]) 
         Print_text("The list of quantities and the shape of their data set:")
         Print_text( [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] )
-        Print_text("Starting iteration existed in the saved data:", save_start)                                   
         Print_text("Save start and read start lists are:", save_start_list, read_start_list)
         Print_text("(!) Starting iteration for new computation:", np.min(read_start_list))                                          
         Print_text("(!) Expected to read and plot data until iteration:", end) 
@@ -311,7 +310,6 @@ else:
         Print_text("Time array length:", np.shape(t)[0])                                                              
         Print_text("The list of quantities and the shape of their data set:")
         Print_text( [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] ) 
-        Print_text("Starting iteration existed in the saved data:", save_start)                                          
         Print_text("Save start and read start lists are:", save_start_list, read_start_list)                             
         Print_text("(!) Starting iteration for new computation:", start)
         Print_text("(!) Expected to read and plot data until iteration:", end)
@@ -444,25 +442,25 @@ for iter in range(start, end):
             idx = 0
             if quant1 != "None":  
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx]) 
-                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant1)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start_list[quant_list.index(quant1)], quant_list_data[quant_list.index(quant1)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
                 idx += 1
             if quant2 != "None":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant2)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct) 
+                Save_Files(save_step, iter, save_start_list[quant_list.index(quant2)], quant_list_data[quant_list.index(quant2)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct) 
                 idx += 1
             if quant3 != "None":                                                                                                                                     
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                             
-                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index(quant3)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)    
+                Save_Files(save_step, iter, save_start_list[quant_list.index(quant3)], quant_list_data[quant_list.index(quant3)], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)    
                 idx += 1
             if plot_phot == "Y":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                          
-                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index("iphot_upper")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start_list[quant_list.index("iphot_upper")], quant_list_data[quant_list.index("iphot_upper")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
                 idx += 1 
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: ", quant_list[idx])                                                                                  
-                Save_Files(save_step, iter, save_start, start, end, quant_list_data[quant_list.index("iphot_lower")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
+                Save_Files(save_step, iter, save_start_list[quant_list.index("iphot_lower")], quant_list_data[quant_list.index("iphot_lower")], quant_filenames_pre + str(quant_list[idx])+"_"+str(radius_select)+"_", succinct)
             if read_time == "True":
                 if succinct == "False": Print_subtitle("Saving files At Iteration", iter, "quantity: time")
-                Save_Files(save_step, iter, save_start, start, end, t, save_time_file_pre, succinct)
+                Save_Files(save_step, iter, time_save_start, t, save_time_file_pre, succinct)
 
 if succinct == "False": Print_subtitle("Done reading data!")                                                                                
 if succinct == "False": Print_text("The shape of the datasets are:", [ (q, np.shape(quant_list_data[quant_list.index(q)])) for q in quant_list] ) 
@@ -634,8 +632,8 @@ ax1 = Plotting_Mesh_YX(t, th, np.abs(quant1_data), time_to_sec, rad_to_deg, fac,
 savename = save_path + str(quant1) + '_vs_t_and_theta_' + str(case) + '_' + string_radius + '_' + str(save_start) + '_' +str(end) + '_' + 'plot.png' 
 ################## Plot the photosphere curve ######################################################################################################
 if plot_phot == "Y":
-    phot_th_upper = [th[it]*rad_to_deg for it in iphot_upper_total]                                                                                                                                                                  
-    phot_th_lower = [th[it]*rad_to_deg for it in iphot_lower_total]
+    phot_th_upper = [th[it]*rad_to_deg for it in quant_list_data[quant_list.index("iphot_upper")]]                                                                                                                                                                  
+    phot_th_lower = [th[it]*rad_to_deg for it in quant_list_data[quant_list.index("iphot_lower")]]
     quant_list = [phot_th_upper, phot_th_lower]
     Plotting_1D(ax1, t, time_to_sec, False, quant_list, 1.0, False, phot_color, None, None, None, font)
     ### Add an extra part of the filename

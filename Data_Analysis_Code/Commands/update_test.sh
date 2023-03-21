@@ -1,5 +1,6 @@
+################## This is a script to fully test the functions of the code####################### 
 # load the input file
-source input.sh
+source input_test.sh
 
 # Print the banner (require to install figlet)
 echo $(tput setaf 24)$thick_b 
@@ -21,7 +22,7 @@ echo $(tput setaf 6)$thick_b
 echo "$(figlet -f standard -w $((terminal_width-$font_size)) "1.  Initialize!!!")"          
 echo $(tput setaf 6)$thick_b                                                                    
 tput setaf 0 
-./initialize.sh
+./initialize_test.sh
 sleep 1
 
 echo ""
@@ -191,7 +192,7 @@ for case in ${cases[@]} ; do
            echo "$(printf '%*s' $(($center_position-15)) ) Plotting gas temperature vs time vs theta (with photosphere)   "                                                                                                 
            echo $thin_b                                                                                                                                                                                             
            tput setaf 0                                                                                                                                                                                             
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_gas $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
+           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_g $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
        fi
 
        if [[ $plot_t_th_Ang_rp =~ ^[Yy]$ ]];                                                                                                                                                                          
