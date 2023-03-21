@@ -138,7 +138,7 @@ Besides `update.sh` and `update_test.sh`, there are some other files that can be
 `clean_test.sh`: remove all the directories related to the tests and the files in them.   
 `input_test.sh`: the input file for the tests. It's in the same format as input.sh. 
 
-Moreover, the python plotting files can also be used separately. Some exmaple commands are included in the header commends in each script.
+Moreover, the python plotting files can be used separately. Some exmaple commands are included in the header commends in each script.
 
     e.g. in plotting_1D_tave_vs_r.py   
     #**Example command 1 (plotting Mdot vs r): python plotting_1D_tave_vs_r.py Wedge8 2000 3568 rhovr None None None True True False 
