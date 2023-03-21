@@ -97,7 +97,7 @@ username=luan
 ### 1. banner and boarders ###
 # Define the banner text
 banner_text="AGN ANALYSIS/PLOTTING CODE"
-author_text="Author: Lunan Sun"
+author_text="Maintained by: Lunan Sun"
 # Get the width of the terminal window   
 terminal_width=$(tput cols)
 # Calculate the center position for the banner text
