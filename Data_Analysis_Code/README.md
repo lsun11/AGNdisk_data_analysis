@@ -16,8 +16,9 @@ The output array aboves contains headers of the physical quantities. The files a
 
 
 ## How to use:  
-### 1. Before using the code, you need check if the following packages are installed:
+### 1. Before using the code, check the required packages and the remote connection.
 
+You need the following 3 packages to run the code:  
 &nbsp; &nbsp; &nbsp; 1). figlet https://linuxhint.com/figlet-command-linux
 
 <font size="2">(note: some version of the figlet may not have the font in the screenshot above, you can simply switch it to another font in `update.sh` or just leave it blank)</font>
@@ -26,17 +27,21 @@ The output array aboves contains headers of the physical quantities. The files a
 
 &nbsp; &nbsp; &nbsp; 3). sshfs https://www.digitalocean.com/community/tutorials/how-to-use-sshfs-to-mount-remote-file-systems-over-ssh  
 
+You also need to check if your working environment is connected to the remote data base (e.g. KITP server):  
+`ssh #username@128.111.9.179`
+
+
 ### 2. Download the code in the location directory and run a quick test.  
-You can run a (relatively) quick tests by hitting `./update_test.sh` in the `/Command` directory. This tests plots a very short period of all types of data and it takes about 40 mintues. For full run some data requries reading huge amount of data and could take hours or even days to finish. 
+You can run a (relatively) quick test by hitting `./update_test.sh` in the `/Command` directory. This test plots a very short period of all types of data and it takes about 40 mintues. For full run some data requries reading huge amount of data and could take hours or even a day to finish. 
 
 &nbsp; &nbsp;  &nbsp;  &nbsp; **Note**: It's recommended to rename the plotting and checkpoint directories in parameter.py before running the test:
 
- i.e. Change: 
+ i.e. change: 
  
        Plot_dir             = Data_dir + 'PLOTS/'
        Checkpoint_dir       = Data_dir + 'Checkpoint/'
        
- To something like:
+  to something like:
       
        Plot_dir             = Data_dir + 'PLOTS_Test/'
        Checkpoint_dir       = Data_dir + 'Checkpoint_Test/'
