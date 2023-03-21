@@ -36,12 +36,12 @@ You can run a (relatively) quick test by hitting `./update_test.sh` in the `/Com
 
 &nbsp; &nbsp;  &nbsp;  &nbsp; **Note**: It's recommended to rename the plotting and checkpoint directories in parameter.py before running the test:
 
- i.e. Change: 
+ i.e. change: 
  
        Plot_dir             = Data_dir + 'PLOTS/'
        Checkpoint_dir       = Data_dir + 'Checkpoint/'
        
- To something like:
+  to something like:
       
        Plot_dir             = Data_dir + 'PLOTS_Test/'
        Checkpoint_dir       = Data_dir + 'Checkpoint_Test/'
