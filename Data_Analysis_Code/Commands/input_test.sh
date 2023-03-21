@@ -27,6 +27,8 @@ plot_t_th_Trad=Y
 plot_t_th_Tgas=Y
 plot_t_th_Ang_rp=Y
 plot_t_th_Ang_tp=Y
+plot_t_th_kappa=Y
+plot_t_th_kappa_p=Y 
 
 plot_t_th_sigma=sigma  #(sigma/sigma_p)
 plot_t_th_phot=Y

@@ -522,7 +522,7 @@ elif str(str(quant1)[0:2]) == "pg":
     fac = 2.77e5                                                                                                 
     logscale = True 
 elif str(str(quant1)[0:3]) == "rho":  # no _2                                                                    
-    if (str(quant2)[0:5]) == "sigma":             
+    if comp_kappa == 1 and (str(quant2)[0:5]) == "sigma":             
         color = 'bone' 
         if (str(quant2)[-1]) == "p":
             #pre_str = '\\kappa_{P}/\\kappa_{es}'

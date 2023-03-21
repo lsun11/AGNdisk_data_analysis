@@ -137,7 +137,7 @@ elif str(str(quant1)[0:3]) == "rho":
     logscale = True                                                                                              
 if (str(quant1)[0:5]) == "sigma":                                                                         
     color = 'bone'                                                                                        
-    if (str(quant2)[-1]) == "p":                                                                          
+    if (str(quant1)[-1]) == "p":                                                                          
         #pre_str = '\\kappa_{P}/\\kappa_{es}'                                                                         
         #cbar_str = r'$\kappa_{Planck}/\kappa_{es}$'                                                      
         pre_str = '\\kappa_{Plank}'                                                                                   

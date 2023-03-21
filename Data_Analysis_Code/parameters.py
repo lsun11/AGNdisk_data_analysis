@@ -26,7 +26,12 @@ Mdot_Edd_cgs = 1.4e18*M_BH                         # in g/s
 
 # Dictories to save plots and checkpoints 
 #Data_dir             = '/home/lunan/mnt/AGNWedge8_product2/'
-Data_dir             = os.path.dirname(os.path.dirname(os.getcwd()))+'/'  # use two layers --> the script is called in /Command dir
+#print(os.getcwd()[-8:])
+if os.getcwd()[-8:] == "Commands":
+    Data_dir             = os.path.dirname(os.path.dirname(os.getcwd()))+'/'  # use two layers --> the script is called in /Command dir
+else:
+    Data_dir             = os.path.dirname(os.getcwd())+'/'
+
 Plot_dir             = Data_dir + 'PLOTS_TEST/'
 Checkpoint_dir       = Data_dir + 'Checkpoint_TEST/'
 
