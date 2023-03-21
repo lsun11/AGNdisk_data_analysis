@@ -6,8 +6,8 @@ echo $(tput setaf 24)$thick_b
 echo $(tput setaf 24)$thick_b
 echo $(tput setaf 24)$thick_b 
 #### Somehow the figlet in eddington doesn't have font univers so I use block here...
-#echo "$(tput setaf 53)$(tput bold)$(printf '%*s' $center_position)$(figlet -f univers -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)"
-echo "$(tput setaf 160)$(tput bold)$(printf '%*s' $center_position)$(figlet -f block -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)" 
+echo "$(tput setaf 53)$(tput bold)$(printf '%*s' $center_position)$(figlet -f univers -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)"
+#echo "$(tput setaf 160)$(tput bold)$(printf '%*s' $center_position)$(figlet -f block -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)" 
 echo "$(tput setaf 17)$(tput bold)$(printf '%*s' $((terminal_width-${#author_text}-17)))${author_text}$(printf '%*s' ${#author_text} )$(tput sgr0)"
 echo "$(tput setaf 17)$(tput bold)$(printf '%*s' $((terminal_width-${#current_time}-15)))"Current Time: "${current_time}$(printf '%*s' ${#current_time} )$(tput sgr0)"
 echo $(tput setaf 24)$thick_b
