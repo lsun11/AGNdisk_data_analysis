@@ -1,2 +1,2 @@
-scp lunan@eddington.physics.ucsb.edu:/home/lunan/mnt/AGNWedge8_product2/Data_Analysis_Code/Commands/* .
-scp lunan@eddington.physics.ucsb.edu:/home/lunan/mnt/AGNWedge8_product2/Data_Analysis_Code/*py ../.
+scp lunan@eddington.physics.ucsb.edu:/home/lunan/mnt/Final_AGNWedge8/Data_Analysis_Code/Commands/* .
+scp lunan@eddington.physics.ucsb.edu:/home/lunan/mnt/Final_AGNWedge8/Data_Analysis_Code/*py ../.

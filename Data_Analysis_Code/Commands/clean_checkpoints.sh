@@ -1,4 +1,4 @@
-Data_dir="/home/lunan/mnt/AGNWedge8_product/"                                                  
+Data_dir=$(dirname $(dirname $(pwd)))"/" 
 Checkpoint="Checkpoint/"
 Checkpoint_dir=$Data_dir$Checkpoint 
 echo $Checkpoint_dir
@@ -9,4 +9,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     rm -rf $Checkpoint_dir/*/*
 fi
-echo "All plots in "$Checkpoint_dir" deleted."
+echo "All checkpoint files in "$Checkpoint_dir" deleted."

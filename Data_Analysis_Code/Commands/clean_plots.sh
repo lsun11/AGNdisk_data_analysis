@@ -1,4 +1,4 @@
-Data_dir="/home/lunan/mnt/AGNWedge8_product/"                                                  
+Data_dir=$(dirname $(dirname $(pwd)))"/"
 Plot="PLOTS/"
 
 Plot_dir=$Data_dir$Plot                                                                   
