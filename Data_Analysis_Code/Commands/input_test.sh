@@ -18,15 +18,13 @@ plot_sin_cos_q2=sigma_p
 plot_sin_cos_iter=(2000 2400)
 plot_sin_cos_plot_phot=Y
 plot_sin_cos_phot_mode=-1
-plot_sin_cos_succ=False
+plot_sin_cos_succ=True
 
 
 ### Make density vs times vs theta (with photosphere)
-plot_t_th_dens=Y
-plot_t_th_Trad=Y
-plot_t_th_Tgas=Y
-plot_t_th_Ang_rp=Y
-plot_t_th_Ang_tp=Y
+plot_t_th=Y
+plot_t_th_q=(rho B2 B3 Temp_r Temp_g Ang_rp Ang_tp PB2 Er)
+
 plot_t_th_kappa=Y
 plot_t_th_kappa_p=Y 
 
@@ -81,7 +79,7 @@ plot_T_var_q2=rho
 plot_T_var_q3=sigma
 plot_T_var_ph_mode=-1
 plot_T_var_rad_cut=200
-plot_T_var_succ=False
+plot_T_var_succ=True
 
 ########################### Stuff to modify when initialzie the code #########################
 

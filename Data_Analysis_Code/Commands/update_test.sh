@@ -165,55 +165,17 @@ for case in ${cases[@]} ; do
         tput setaf 0                 
 
      #------------------------------plotting_t_vs_th_vs_quant.py--------------------------------#
-       if [[ $plot_t_th_dens =~ ^[Yy]$ ]];
+       if [[ $plot_t_th =~ ^[Yy]$ ]];
        then
-           tput setaf 31
-           echo $thin_b 
-           echo "$(printf '%*s' $(($center_position-13)) ) Plotting density vs time vs theta (with photosphere)   "
-           echo $thin_b 
-           tput setaf 0
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case rho $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ
+           for quant in ${plot_t_th_q[@]}; do 
+               tput setaf 31
+               echo $thin_b 
+               echo "$(printf '%*s' $(($center_position-13)) ) Plotting $quant vs time vs theta (with photosphere)   "
+               echo $thin_b 
+               tput setaf 0
+               python $code_path"plotting_t_vs_th_vs_quant.py" $case $quant $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ
+           done
        fi
-
-       if [[ $plot_t_th_Trad =~ ^[Yy]$ ]];                                                                                                                                                                         
-       then                                                                                                                                                                                                        
-           tput setaf 31                                                                                                                                                                                            
-           echo $thin_b                                                                                                                                                                                             
-           echo "$(printf '%*s' $(($center_position-17)) ) Plotting radiation temperature vs time vs theta (with photosphere)   "      
-           echo $thin_b                                                                                                                                                                                             
-           tput setaf 0                                                                                                                                                                                             
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_r $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
-       fi
-
-       if [[ $plot_t_th_Tgas =~ ^[Yy]$ ]];                                                                                                                                                                          
-       then                                                                                                                                                                                                        
-           tput setaf 31                                                                                                                                                                                            
-           echo $thin_b                                                                                                                                                                                             
-           echo "$(printf '%*s' $(($center_position-15)) ) Plotting gas temperature vs time vs theta (with photosphere)   "                                                                                                 
-           echo $thin_b                                                                                                                                                                                             
-           tput setaf 0                                                                                                                                                                                             
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case Temp_g $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                                   
-       fi
-
-       if [[ $plot_t_th_Ang_rp =~ ^[Yy]$ ]];                                                                                                                                                                          
-       then                                                                                                                                                                                                         
-           tput setaf 31                                                                                                                                                                                            
-           echo $thin_b                                                                                                                                                                                             
-           echo "$(printf '%*s' $(($center_position-15)) ) Plotting ang momentum stress (r-phi) vs time vs theta (with photosphere)   "            
-           echo $thin_b                                                                                                                                                                                             
-           tput setaf 0                                                                                                                                                                                             
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case Ang_rp $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                              
-       fi
-
-       if [[ $plot_t_th_Ang_tp =~ ^[Yy]$ ]];                                                                                                                                                                          
-       then                                                                                                                                                                                                         
-           tput setaf 31                                                                                                                                                                                            
-           echo $thin_b                                                                                                                                                                                             
-           echo "$(printf '%*s' $(($center_position-15)) ) Plotting ang momentum stress (theta-phi) vs time vs theta (with photosphere)   "                                                                                         
-           echo $thin_b                                                                                                                                                                                             
-           tput setaf 0                                                                                                                                                                                             
-           python $code_path"plotting_t_vs_th_vs_quant.py" $case Ang_tp $plot_t_th_sigma None $radius Y $start $end $plot_t_th_phot_mode $plot_t_th_phot_save_t $plot_t_th_phot_succ                              
-       fi 
 
 
        if [[ $plot_t_th_kappa =~ ^[Yy]$ ]];                                                                                                                                                            

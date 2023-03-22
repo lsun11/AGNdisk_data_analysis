@@ -9,10 +9,10 @@
 
 
 # Example command1: make plots of density vs tims vs theta at radius= 120 rg with photosphere using sqrt(kappa*kappaes) for photosphere
-# python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p None 120 Y 3000 3500 2 True False
+# python plotting_t_vs_th_vs_quant.py Wedge8 rho sigma_p None 120 Y 3000 3500 2 True False
 
 # Example command2: Make a series of plots in command1 at r = 120, 140, 160, 180 and 200 rg:
-# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8_2 rho sigma_p None $i Y 2000 3500 -1 True False; done 
+# for i in `seq 120 20 200`; do python plotting_t_vs_th_vs_quant.py Wedge8 rho sigma_p None $i Y 2000 3500 -1 True False; done 
 
 # Example command3: Output ONLY quantity(e.g. rho) checkpoint files: 
 # python plotting_t_vs_th_vs_quant.py Wedge8_2 rho None None 140 N 2000 3500 -1 False False
@@ -348,7 +348,7 @@ for iter in range(start, end):
             radius_idx = shift_rad.index(min(shift_rad))        
 
             if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
-                Print_text("Loading quantity: ", str(quant1))
+                if succinct == "False": Print_text("Loading quantity: ", str(quant1))
                 if np.shape( quant_list_data[quant_list.index(quant1)] )[0] == 0:
                     if quant1 == "pg":
                         quant_list_data[quant_list.index(quant1)].append( data[quant1][pg_idx[str(radius_select)]] )
@@ -361,14 +361,14 @@ for iter in range(start, end):
                         quant_list_data[quant_list.index(quant1)] =  np.vstack( [quant_list_data[quant_list.index(quant1)], [q[radius_idx] for q in data[quant1]] ] )  
  
             if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
-                Print_text("Loading quantity: ", str(quant2))  
+                if succinct == "False": Print_text("Loading quantity: ", str(quant2))  
                 if np.shape( quant_list_data[quant_list.index(quant2)] )[0] == 0: 
                     quant_list_data[quant_list.index(quant2)].append( [q[radius_idx] for q in data[quant1]] )
                 else:
                     quant_list_data[quant_list.index(quant2)] =  np.vstack( [quant_list_data[quant_list.index(quant2)], [q[radius_idx] for q in data[quant2]] ] )
 
             if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
-                Print_text("Loading quantity: ", str(quant3))
+                if succinct == "False": Print_text("Loading quantity: ", str(quant3))
                 if np.shape( quant_list_data[quant_list.index(quant3)] )[0] == 0: 
                     if quant3 == "pg":
                         quant_list_data[quant_list.index(quant3)].append( data[quant3][pg_idx[str(radius_select)]] ) 
@@ -404,23 +404,23 @@ for iter in range(start, end):
             if succinct == "False": Print_subsubtitle("Reading 1D data, radius already specified")
             if file_exist == 0:
                 if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
-                    Print_text("Loading quantity: ", str(quant1))  
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant1))  
                     quant_list_data[quant_list.index(quant1)].append( data[quant1] )
                 if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
-                    Print_text("Loading quantity: ", str(quant2))  
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant2))  
                     quant_list_data[quant_list.index(quant2)].append( data[quant2] )
                 if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
-                    Print_text("Loading quantity: ", str(quant3))                                                                                                                  
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant3))                                                                                                                  
                     quant_list_data[quant_list.index(quant3)].append( data[quant3] ) 
             else:
                 if quant1 != "None" and iter >= read_start_list[quant_list.index(quant1)]:
-                    Print_text("Loading quantity: ", str(quant1))    
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant1))    
                     quant_list_data[quant_list.index(quant1)] = np.vstack( [quant_list_data[quant_list.index(quant1)], data[quant1]] )
                 if quant2 != "None" and iter >= read_start_list[quant_list.index(quant2)]:
-                    Print_text("Loading quantity: ", str(quant2))  
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant2))  
                     quant_list_data[quant_list.index(quant2)] = np.vstack( [quant_list_data[quant_list.index(quant2)], data[quant2]] ) 
                 if quant3 != "None" and iter >= read_start_list[quant_list.index(quant3)]:
-                    Print_text("Loading quantity: ", str(quant3))                                                                                                                                   
+                    if succinct == "False": Print_text("Loading quantity: ", str(quant3))                                                                                                                                   
                     quant_list_data[quant_list.index(quant3)] = np.vstack( [quant_list_data[quant_list.index(quant3)], data[quant3]] )
             if plot_phot == "Y" and iter > read_start_list[quant_list.index("iphot_upper")]:
                 Print_text("Finding the photosphere!")  
@@ -515,6 +515,7 @@ if str(str(quant1)[0:2]) == "PB":
     cbar_str = r'$P_B$'
     fac = 2.77e5
     logscale = True 
+    phot_color = 'yellow'
 elif str(str(quant1)[0:2]) == "pg":                                                                              
     color = 'PuOr_r'                                                                                             
     pre_str = 'P_gas'
@@ -541,6 +542,7 @@ elif str(str(quant1)[0:3]) == "rho":  # no _2
         #v_min = 0.0
         #fac = 1.0
         logscale = False
+        phot_color = 'white' 
     else:
         color = 'BrBG_r'                                                                                             
         pre_str = 'log_{10}(\\rho/\\rho_0)'
@@ -548,31 +550,35 @@ elif str(str(quant1)[0:3]) == "rho":  # no _2
         #fac  = 1.0/dens_to_cgs                                                                                               
         fac  = 1.0          # code unit rho is just rho_cgs/rho_0
         logscale = True                                                                                              
-    phot_color = 'yellow'
+        phot_color = 'black'
 elif str(str(quant1)[0:2]) == "Er":   # no _2                                                                    
     color = 'PRGn_r'                                                                                             
     pre_str = 'E_r'
     cbar_str = r'$E_r$'                                                                                           
     fac = 2.77e5                                                                                                 
     logscale = True                                                                                              
+    phot_color = 'yellow'
 elif str(str(quant1)[0:2]) == "B1":                                                                              
     color = 'RdYlBu_r'                                                                                           
     pre_str = 'E_r'
     cbar_str = r'$B_r$'                                                                                           
     fac = 2.64e3                                                                                                 
-    logscale = False                                                                                             
+    logscale = False
+    phot_color = 'yellow'                                                                                             
 elif str(str(quant1)[0:2]) == "B2":                                                                              
     color = 'RdYlGn_r'                                                                                           
     pre_str = 'B_{\\theta}'
     cbar_str = r'$B_{\theta}$'                                                                                    
     fac = 2.64e3                                                                                                 
     logscale = False                                                                                             
+    phot_color = 'yellow'
 elif str(str(quant1)[0:2]) == "B3":                                                                              
     color = 'RdBu_r'                                                                                             
     pre_str = 'B_{\\phi}'
     cbar_str = r'$B_{\phi}$'                                                                                      
     fac = 2.64e3                                                                                                 
-    logscale = False                                                                                             
+    logscale = False     
+    phot_color = 'yellow'                                                                                        
 elif str(str(quant1)[0:6]) == "Temp_r": # no _2          
     color = 'Spectral'                                    
     pre_str = 'T_{rad} (K)'                                                                                                  

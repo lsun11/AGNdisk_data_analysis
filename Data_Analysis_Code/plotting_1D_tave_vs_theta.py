@@ -27,11 +27,12 @@ from sys import argv
 myfonts = "Times New Roman"  
 plt.rcParams['font.family'] = "sans-serif"                                                                         
 plt.rcParams['font.sans-serif'] = myfonts                                                                          
+from tqdm import tqdm 
                                                                                                                    
 from parameters import *                                                                                           
 from util import *                     
 
-Print_title("========================== Starting plotting_1D_tave.py =============================")
+Print_title("========================== Starting plotting_1D_tave_vs_theta.py =============================")
 
 
 ########################################################################################################         
@@ -167,11 +168,16 @@ Print_title(sp20*5)
 Print_subtitle("Start Reading New Data to Arrays!!!")
 radius = {'1': 120, '2':140, '3':160, '4':180}  
 radius_pg = {'120':0, '140':1,'160':2,'180':3}
+pbar = tqdm(total=end-start)
+
 for iter in range(start, end):                                                                                   
     filename = "hist_"+str(iter).zfill(5)+".npz"
     if os.path.exists(dir+'/'+filename):
-        Print_subsubtitle("Reading file:", filename)
         data = np.load(dir+'/'+filename)
+        if succinct == "False":                                                                                                                                                                                                                      
+            Print_subtitle("Reading file:", filename)                                                                                                                                                                                                
+        else:                                                                                                                                                                                                                                        
+            pbar.update(n=1)
 
         #######################################
         #  Check the quantity data is 1D or 2D    
