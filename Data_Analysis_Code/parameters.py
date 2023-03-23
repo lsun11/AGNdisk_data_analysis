@@ -32,8 +32,11 @@ if os.getcwd()[-8:] == "Commands":
 else:
     Data_dir             = os.path.dirname(os.getcwd())+'/'
 
-Plot_dir             = Data_dir + 'PLOTS_TEST/'
-Checkpoint_dir       = Data_dir + 'Checkpoint_TEST/'
+#Plot_dir             = Data_dir + 'PLOTS_TEST/'
+#Checkpoint_dir       = Data_dir + 'Checkpoint_TEST/'
+
+Plot_dir             = Data_dir + 'PLOTS/'
+Checkpoint_dir       = Data_dir + 'Checkpoint/'
 
 
 # Standard font

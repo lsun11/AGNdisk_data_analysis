@@ -6,9 +6,6 @@ radii=(120 140)
 start=2000
 end=2030
 
-### type plots  you want to make ###
-#plot_Mdot=Y
-
 ############################### Different types of plot to make ###############################
 ### Make poloidal distribution plot of azimuthally-averaged quantity
 plot_sin_cos_quant=Y
@@ -21,7 +18,7 @@ plot_sin_cos_phot_mode=-1
 plot_sin_cos_succ=True
 
 
-### Make density vs times vs theta (with photosphere)
+### Make quantities vs times vs theta (with photosphere)
 plot_t_th=Y
 plot_t_th_q=(rho B2 B3 Temp_r Temp_g Ang_rp Ang_tp PB2 Er)
 
@@ -85,7 +82,6 @@ plot_T_var_succ=True
 
 
 ### path to store the code ###
-#home_path="/home/lunan/mnt/AGNWedge8_product2/"
 home_path=$(dirname $(dirname $(pwd)))"/"
 code_path=$home_path"Data_Analysis_Code/"
 plot_path=$home_path"PLOTS_TEST/"

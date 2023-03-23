@@ -99,15 +99,16 @@ for item in quant_list:
 file_exist = 0
 for idx, quant in enumerate(quant_list):
     Print_subtitle("Compute " + str(quant) + "!!! First check saved files")     
-    filenames = checkpoint_path + "T_ave_vs_r_"+str(quant)+"_*" 
-    t_filenames_pre = checkpoint_path + "Tave_vs_r_time_"+str(quant)+"__"
-        
+    filenames = checkpoint_path + "T_ave_vs_r"+str(quant)+"_*" 
+    t_filenames_pre = checkpoint_path + "Tave_vs_r_time"+str(quant)+"_"
+
     quant_data[idx], save_start_list[idx], read_start_list[idx] = Check_Load_Files(filenames, t_filenames_pre, file_exist, start, end, False, read_time, succinct)
 
 
 if read_time == "True": 
     t, time_save_start, time_read_start = Check_Load_Files(t_filenames_pre+"*", t_filenames_pre, file_exist, start, end, False, read_time, succinct)
-    
+
+start = min(read_start_list)    
 if succinct == "False":                                                                                           
     Print_subtitle("Data structure after loading saved files:")                                                  
     Print_text("Time array:", np.shape(t)[0])                                                                    
@@ -156,9 +157,10 @@ for iter in range(start, end):
 
     # Get time after Mdot data in case saved time files exists
     if read_time == "True" and iter >= time_read_start:                                                                                                                                                 
-        t.append(Get_Time(data, dir))  
-    else:
-        t = np.append(t, Get_Time(data, dir))
+        if len(t) == 0:
+            t.append(Get_Time(data, dir))  
+        else:
+            t = np.append(t, Get_Time(data, dir))
     
     if succinct == "False": Print_subsubtitle("Finish Reading!", "Time array length:", np.shape(t)[0], " Quantity arrays lengths",[[quant_list[i], np.shape(quant_data[i])] for i in range(len(quant_list))])  
 
