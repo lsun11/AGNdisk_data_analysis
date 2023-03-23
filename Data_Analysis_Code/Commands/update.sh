@@ -3,41 +3,41 @@
 source input.sh
 
 # Print the banner (require to install figlet)
-echo $(tput setaf 24)$thick_b 
-echo $(tput setaf 24)$thick_b
-echo $(tput setaf 24)$thick_b 
+echo $(tput setaf $bl)$thick_b 
+echo $(tput setaf $bl)$thick_b
+echo $(tput setaf $bl)$thick_b 
 #### Somehow the figlet in eddington doesn't have font univers so I use block here...
-#echo "$(tput setaf 53)$(tput bold)$(printf '%*s' $center_position)$(figlet -f univers -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)"
-echo "$(tput setaf 160)$(tput bold)$(printf '%*s' $center_position)$(figlet -f block -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)" 
-echo "$(tput setaf 17)$(tput bold)$(printf '%*s' $((terminal_width-${#author_text}-17)))${author_text}$(printf '%*s' ${#author_text} )$(tput sgr0)"
-echo "$(tput setaf 17)$(tput bold)$(printf '%*s' $((terminal_width-${#current_time}-15)))"Current Time: "${current_time}$(printf '%*s' ${#current_time} )$(tput sgr0)"
-echo $(tput setaf 24)$thick_b
-echo $(tput setaf 24)$thick_b
-echo $(tput setaf 24)$thick_b  
+#echo "$(tput setaf $rd)$(tput bold)$(printf '%*s' $center_position)$(figlet -f univers -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)"
+echo "$(tput setaf $rd)$(tput bold)$(printf '%*s' $center_position)$(figlet -f block -w $((terminal_width-$font_size)) "${banner_text}")$(printf '%*s' $center_position)$(tput sgr0)" 
+echo "$(tput setaf $mg)$(tput bold)$(printf '%*s' $((terminal_width-${#author_text}-10)))${author_text}$(printf '%*s' ${#author_text} )$(tput sgr0)"
+echo "$(tput setaf $mg)$(tput bold)$(printf '%*s' $((terminal_width-${#current_time}-15)))"Current Time: "${current_time}$(printf '%*s' ${#current_time} )$(tput sgr0)"
+echo $(tput setaf $bl)$thick_b
+echo $(tput setaf $bl)$thick_b
+echo $(tput setaf $bl)$thick_b  
 echo ""
 echo "" 
 sleep 1
 
-echo $(tput setaf 6)$thick_b                                                                                                                                                                                                  
+echo $(tput setaf $bl_b)$thick_b                                                                                                                                                                                                  
 echo "$(figlet -f standard -w $((terminal_width-$font_size)) "1.  Initialize!!!")"          
-echo $(tput setaf 6)$thick_b                                                                    
+echo $(tput setaf $bl_b)$thick_b                                                                    
 tput setaf 0 
 ./initialize.sh
 sleep 1
 
 echo ""
 echo ""
-echo $(tput setaf 6)$thick_b                                                                                                                                                                                                                   
+echo $(tput setaf $bl_b)$thick_b                                                                                                                                                                                                                   
 echo "$(figlet -f standard -w $((terminal_width-$font_size)) "2.  Mount Data!!!")" 
-echo $(tput setaf 6)$thick_b 
+echo $(tput setaf $bl_b)$thick_b 
 tput setaf 0
 ./mount.sh
 
 echo ""
 echo ""
-echo $(tput setaf 6)$thick_b 
+echo $(tput setaf $bl_b)$thick_b 
 echo "$(figlet -f standard -w $((terminal_width-$font_size)) "3.  Start Making Plots!!!")"
-echo $(tput setaf 6)$thick_b                                                                                                                                                                                                  
+echo $(tput setaf $bl_b)$thick_b                                                                                                                                                                                                  
 sleep 1
 
 #####################################################
@@ -47,7 +47,7 @@ tput setaf 0
 for case in ${cases[@]} ; do
     echo ""
 
-    tput setaf 24
+    tput setaf $bl
     if [[ $case == "Wedge8" ]]; then  
         echo $mid_b
 	echo $vert_b_short" Case Wedge8 "$vert_b_short
@@ -101,7 +101,7 @@ for case in ${cases[@]} ; do
         exit 1;  
     fi
  
-    tput setaf 24
+    tput setaf $bl
     echo $thin_b
     echo "$(printf '%*s' $(($center_position-20))) The starting and ending iterations we use are: $start, $end"
     echo $thin_b 
@@ -112,7 +112,7 @@ for case in ${cases[@]} ; do
     ############################################# 
     if [[ $plot_sin_cos_quant =~ ^[Yy]$ ]]; 
     then
-        tput setaf 31
+        tput setaf $bl_b
         echo $thin_b
         echo "$(printf '%*s' $(($center_position-22)) ) Plotting poloidal distribution plot of azimuthally-averaged quantity! With possibly photosphere "
         echo $thin_b
@@ -125,7 +125,7 @@ for case in ${cases[@]} ; do
                                                                                                                                                                                                                                                     
     if [[ $plot_1D_th_ave =~ ^[Yy]$ ]];                                                                                                                                                                                                         
     then                                                                                                                                                                                                                                        
-       tput setaf 31                                                                                                                                                                                                                            
+       tput setaf $bl_b                                                                                                                                                                                                                            
        echo $thin_b    
        echo "$(printf '%*s' $(($center_position-11)) ) Plotting theta-average quantities vs radius (Ex. Mdot)    "                                                                                                                                         
        echo $thin_b                                                                                                                                                                                                                             
@@ -136,7 +136,7 @@ for case in ${cases[@]} ; do
     
     if [[ $plot_t_r_quant =~ ^[Yy]$ ]];                                                                                      
     then     
-       tput setaf 31                                                                                                         
+       tput setaf $bl_b                                                                                                         
        echo $thin_b                                                                                                          
        echo "$(printf '%*s' $(($center_position-15)) ) Plotting quantity vs time vs radius plots at a given theta (Ex. Suf_dens/kappa)    " 
        echo $thin_b                                                                                                          
@@ -146,7 +146,7 @@ for case in ${cases[@]} ; do
 
     if [[ $plot_T_var =~ ^[Yy]$ ]];                                                                                                                                                                             
     then                                                                                                                                                                                                            
-       tput setaf 31                                                                                                                                                                                                
+       tput setaf $bl_b                                                                                                                                                                                                
        echo $thin_b      
        echo "$(printf '%*s' $(($center_position-15)) ) Plotting temperature variation plots at given locations      "
        echo $thin_b
@@ -158,7 +158,7 @@ for case in ${cases[@]} ; do
     ########## radius dependent plots below #############
 
     for radius in ${radii[@]}; do	
-        tput setaf 24
+        tput setaf $bl
         echo $thin_b
 	echo $wave_b_short" radius=$radius "$wave_b_short
         echo $thin_b
@@ -168,7 +168,7 @@ for case in ${cases[@]} ; do
        if [[ $plot_t_th =~ ^[Yy]$ ]];
        then
            for quant in ${plot_t_th_q[@]}; do 
-               tput setaf 31
+               tput setaf $bl_b
                echo $thin_b 
                echo "$(printf '%*s' $(($center_position-13)) ) Plotting $quant vs time vs theta (with photosphere)   "
                echo $thin_b 
@@ -180,7 +180,7 @@ for case in ${cases[@]} ; do
 
        if [[ $plot_t_th_kappa =~ ^[Yy]$ ]];                                                                                                                                                            
        then                                                                                                                                                                                                                           
-           tput setaf 31                                                                                                                                                                                                              
+           tput setaf $bl_b                                                                                                                                                                                                              
            echo $thin_b                                                                                                                                                                                                               
            echo "$(printf '%*s' $(($center_position-15)) ) Plotting Rossland Opacity vs time vs theta (with photosphere)   "                                     
            echo $thin_b                                                                                                                                                                                                               
@@ -190,7 +190,7 @@ for case in ${cases[@]} ; do
 
        if [[ $plot_t_th_kappa_p =~ ^[Yy]$ ]];
        then
-          tput setaf 31 
+          tput setaf $bl_b 
           echo $thin_b 
           echo "$(printf '%*s' $(($center_position-15)) ) Plotting Planck Opacity vs time vs theta (with photosphere)   "
           echo $thin_b
@@ -203,7 +203,7 @@ for case in ${cases[@]} ; do
 
         if [[ $plot_1D_tave =~ ^[Yy]$ ]];                                                                                                                                                                         
         then                                                                                                                                                                                                        
-           tput setaf 31                                                                                                                                                                                            
+           tput setaf $bl_b                                                                                                                                                                                            
            echo $thin_b                                                                                                                                                                                             
            echo "$(printf '%*s' $(($center_position-10)) ) Plotting time-average quantities vs theta   " 
            echo $thin_b                                                                                                                                                                                                        
@@ -213,7 +213,7 @@ for case in ${cases[@]} ; do
    
         if [[ $plot_1D_tave_vst =~ ^[Yy]$ ]];            
         then                                                                                                          
-           tput setaf 31                                                                                              
+           tput setaf $bl_b                                                                                              
            echo $thin_b                                                                                               
            echo "$(printf '%*s' $(($center_position-10)) ) Plotting time-average quantities vs time    "     
            echo $thin_b                                                                                               

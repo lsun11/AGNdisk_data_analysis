@@ -1,7 +1,7 @@
 source input.sh
 
 for case in ${cases[@]} ; do
-    echo $(tput setaf 24)$thin_b
+    echo $(tput setaf $bl)$thin_b
     echo "Check if data is mounted"
     echo $thin_b
     if [[ $(find $home_path"DATA"$case -mindepth 1 -print -quit) ]]; then

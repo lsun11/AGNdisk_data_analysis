@@ -124,5 +124,24 @@ vert_b_short=$(printf '%*s' "$len3" | tr ' ' "$ch4")
 wave_b=$(printf '%*s' "$len" | tr ' ' "$ch5")
 wave_b_short=$(printf '%*s' "$len4" | tr ' ' "$ch5")
 
-### 2. Date and time ###
+### 2. colors ###                                                                                                        
+bk=0                                                                                                                     
+rd=1                                                                                                                     
+gr=2                                                                                                                     
+yl=3                                                                                                                     
+bl=4                                                                                                                     
+mg=5                                                                                                                     
+cy=6                                                                                                                     
+wt=7                                                                                                                     
+# For Mac terminal bright colors = normal colors + 8 in ANSI, for others it could be +60                                 
+bk_b=$(($bk+8))                                                                                                          
+rd_b=$(($rd+8))                                                                                                          
+gr_b=$(($gr+8))                                                                                                          
+yl_b=$(($yl+8))                                                                                                          
+bl_b=$(($bl+8))                                                                                                          
+mg_b=$(($mg+8))                                                                                                          
+cy_b=$(($cy+8))                                                                                                          
+wt_b=$(($wt+8))
+
+### 3. Date and time ###
 current_time=$(date +"%Y-%m-%d %H:%M:%S")
