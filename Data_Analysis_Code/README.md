@@ -19,20 +19,24 @@ The output array aboves contains headers of the physical quantities. The files a
 ### 1. Before using the code, check the required packages and the remote connection.
 
 You need the following 3 packages to run the code:  
-&nbsp; &nbsp; &nbsp; 1). figlet https://linuxhint.com/figlet-command-linux
 
-<font size="2">(note: some version of the figlet may not have the font in the screenshot above, you can simply switch it to another font in `update.sh` or just leave it blank)</font>
+&nbsp; &nbsp; &nbsp; 1). Python3 https://realpython.com/installing-python  
+&nbsp; &nbsp; &nbsp; <font size="2">(If you have both Python2 and 3 but set Python2 as your default, see: https://askubuntu.com/questions/320996/how-to-make-python-program-command-execute-python-3)</font>
 
-&nbsp; &nbsp; &nbsp; 2). colorama https://pypi.org/project/colorama
+&nbsp; &nbsp; &nbsp; 2). figlet https://linuxhint.com/figlet-command-linux  
+&nbsp; &nbsp; &nbsp; <font size="2">(Some version of the figlet may not have the font in the screenshot above, you can simply switch it to another font in `update.sh` or just leave it blank)</font>
 
-&nbsp; &nbsp; &nbsp; 3). sshfs https://www.digitalocean.com/community/tutorials/how-to-use-sshfs-to-mount-remote-file-systems-over-ssh  
+&nbsp; &nbsp; &nbsp; 3). colorama https://pypi.org/project/colorama
+
+&nbsp; &nbsp; &nbsp; 4). sshfs https://www.digitalocean.com/community/tutorials/how-to-use-sshfs-to-mount-remote-file-systems-over-ssh  
 
 You also need to check if your working environment is connected to the remote data base (e.g. KITP server):  
 `ssh #username@128.111.9.179`
 
 
 ### 2. Download the code in the location directory and run a quick test.  
-You can run a (relatively) quick test by hitting `./update_test.sh` in the `/Command` directory. This test plots a very short period of all types of data and it takes about 40 mintues. For full run some data requries reading huge amount of data and could take hours or even a day to finish. 
+You can run a (relatively) quick test by hitting `./update_test.sh` in the `/Command` directory. **Before doing so please go to file** `input_test.sh` **and change parameter `username` to your KITP server username**.
+This test plots a very short period of all types of data and it takes about 40 mintues. For full run some data requries reading huge amount of data and could take hours or even a day to finish. 
 
 &nbsp; &nbsp;  &nbsp;  &nbsp; **Note**: It's recommended to rename the plotting and checkpoint directories in parameter.py before running the test:
 
