@@ -621,11 +621,13 @@ start_time = int(t_phys[0])
 end_time = int(t_phys[-1]) 
 
 
-radius = {'1': 120, '2':140, '3':160, '4':180}                                                                                                                                                                                   
-if str(quant1)[-1]  in radius.keys():                                                                                                                                                                                                        
-    string_radius = str(radius[str(quant1)[-1]])                                                                                                                                                                                            
-else:                                                                                                                                                                                                                            
-    string_radius = str(int(radius_select))
+# the following lines are obsolete, using the will result some wrong filenames
+#radius = {'1': 120, '2':140, '3':160, '4':180}                                                                                                                                                                                   
+#if str(quant1)[-1]  in radius.keys():                                                                                                                                                                                                        
+#    string_radius = str(radius[str(quant1)[-1]])                                                                                                                                                                                            
+#else:                                                                                                                                                                                                                            
+
+string_radius = str(int(radius_select))
 title = r'${}$ at $r =$'.format(pre_str) + string_radius +'$ r_g$' + ' from ' + str(start_time) + ' to ' + str(end_time)
 xlabel = r'$t (s)$'
 ylabel = r'$\theta(^o)$'

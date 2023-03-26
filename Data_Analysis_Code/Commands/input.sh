@@ -58,7 +58,7 @@ plot_1D_th_ave_succ=True
 
 
 ### Make quantity vs time vs radius plots at a given theta
-plot_t_r_quant=Y
+plot_t_r_quant=N
 
 plot_t_r_q1=sigma
 plot_t_r_q2=None

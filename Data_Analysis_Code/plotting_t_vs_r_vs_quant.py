@@ -23,11 +23,6 @@ from util import *
 
 Print_title("========================== Starting plotting_t_vs_r_vs_quant.py =============================")
                                                                                                                                                                                                                                        
-font = {'family': 'sans-serif',                                                                                                                                                                                                        
-        'color':  'black',                                                                                                                                                                                                             
-        'weight': 'normal',                                                                                                                                                                                                            
-        'size': 16,                                                                                                                                                                                                                    
-        }                                                                                                                                                                                                                              
     
 ########################################################################################################            
 # input arguments                                                                                                   
@@ -132,7 +127,7 @@ if str(str(quant1)[0:3]) == "sur":   #surface_density
 elif str(str(quant1)[0:3]) == "rho":  
     color = 'BrBG_r'                                                                                             
     pre_str = 'log_{10}(\\rho/\\rho_0)'
-    cbar_str = r'$$log_{10}(\rho/\rho_0)$'                  
+    cbar_str = r'$$log_{10}(\rho/\rho_0) (g/cm^3)$'                  
     fac  = 1.0                            # code unit rho is just rho_cgs/rho_0                                                                                             
     logscale = True                                                                                              
 if (str(quant1)[0:5]) == "sigma":                                                                         
@@ -141,14 +136,14 @@ if (str(quant1)[0:5]) == "sigma":
         #pre_str = '\\kappa_{P}/\\kappa_{es}'                                                                         
         #cbar_str = r'$\kappa_{Planck}/\kappa_{es}$'                                                      
         pre_str = '\\kappa_{Plank}'                                                                                   
-        cbar_str = r'$\kappa_{Planck}$'                                                                   
+        cbar_str = r'$\kappa_{Planck} (cm^2/g)$'                                                                   
     else:                                                                                                 
         #pre_str = '\\kappa_{R}/\\kappa_{es}'                                                                         
         #cbar_str = r'$\kappa_{Rossland}/\kappa_{es}$'       
         pre_str = '\\kappa_{Rossland}'                                                                    
-        cbar_str = r'$\kappa_{Rossland}$'                                                                 
+        cbar_str = r'$\kappa_{Rossland} (cm^2/g)$'                                                                 
     fac  = 1.0/(dens_to_cgs*r_to_cgs)                                                                             
-    #v_max = 3.0        
+    v_max = 5.0        
     #v_min = 0.0                                                                                                  
     #fac = 1.0  
     logscale = False               
